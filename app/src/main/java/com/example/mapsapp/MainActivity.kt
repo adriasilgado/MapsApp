@@ -10,6 +10,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
@@ -23,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.MapScreen
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,15 +36,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navigationController = rememberNavController()
-                    NavHost(
-                        navController = navigationController,
-                        startDestination = Routes.MapScreen.route
-                    ) {
-                        composable(Routes.MapScreen.route) {
-                            MapScreen(navigationController)
-                        }
-                    }
+                    MyDrawer()
                 }
             }
         }
@@ -58,11 +52,16 @@ fun MyDrawer() {
     ModalDrawerSheet {
         Text("Drawer Title")
         Divider()
+        NavigationDrawerItem(label = {Text("Item 1")}, selected = false,
+            onClick = {
+        scope.launch {
+            state.close()
+        }
+        //navegar
+            })
     } }) {
-        MyScaffold(state)
-        
+        MapScreen(state, navigationController)
     }
-
 }
 
 

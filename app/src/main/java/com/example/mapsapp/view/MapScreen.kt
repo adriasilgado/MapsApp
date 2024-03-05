@@ -1,5 +1,6 @@
 package com.example.mapsapp.view
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,7 +26,19 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
 @Composable
-fun MapScreen(navigationController: NavController) {
+fun MapScreen(state: DrawerState ,navigationController: NavController) {
+    Scaffold (topBar = { MyTopAppBar(state) }){paddingValues ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
+            Map(navigationController)
+        }
+    }
+
+}
+
+@Composable
+fun Map(navigationController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -46,13 +59,6 @@ fun MapScreen(navigationController: NavController) {
             )
         }
     }
-}
-
-@Composable
-fun MyScaffold(state: DrawerState) {
-    Scaffold (topBar = {
-        MyTopAppBar(state)
-    }{
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
