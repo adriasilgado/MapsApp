@@ -10,6 +10,8 @@ class MyViewModel: ViewModel() {
     val markers = _markers
     private val _showBottomSheet = MutableLiveData<Boolean>(false)
     val showBottomSheet = _showBottomSheet
+    private val _name = MutableLiveData<String>()
+    val name = _name
 
     fun addMarker(pos:LatLng){
         val currentList = _markers.value.orEmpty().toMutableList()
@@ -19,5 +21,9 @@ class MyViewModel: ViewModel() {
 
     fun changeBottomSheetState(){
         _showBottomSheet.value = !_showBottomSheet.value!!
+    }
+
+    fun changeName(name: String){
+        _name.value = name
     }
 }

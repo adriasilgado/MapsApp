@@ -1,9 +1,11 @@
 package com.example.mapsapp.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.BottomSheetScaffold
@@ -14,24 +16,34 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+
 import androidx.compose.runtime.mutableStateOf
 
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mapsapp.R
+import com.example.mapsapp.sky
 import com.example.mapsapp.viewModel.MyViewModel
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -76,6 +88,7 @@ fun Map(navigationController: NavController, myViewModel: MyViewModel) {
                 state = MarkerState(position = marker),
                 title = "ITB",
                 snippet = "Marker at ITB"
+                //icon = BitmapDescriptorFactory.fromResource(R.drawable.icon)
             )
         }
     }
@@ -102,26 +115,45 @@ fun MyTopAppBar(state: DrawerState) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheet( myViewModel: MyViewModel) {
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-    val show by myViewModel.showBottomSheet.observeAsState()
-    if (show!!) {
-        ModalBottomSheet(
-            onDismissRequest = {
-                myViewModel.changeBottomSheetState()
-            },
-            sheetState = sheetState
-        ) {
-            // Sheet content
-            Button(onClick = {
-                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        myViewModel.changeBottomSheetState()
+fun BottomSheet(myViewModel: MyViewModel) {
+    Column (
+        modifier = Modifier.fillMaxSize().wrapContentHeight(Alignment.CenterVertically),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally){
+        val sheetState = rememberModalBottomSheetState()
+        val scope = rememberCoroutineScope()
+        val show by myViewModel.showBottomSheet.observeAsState()
+        val name by myViewModel.name.observeAsState("")
+        if (show!!) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    myViewModel.changeBottomSheetState()
+                },
+                sheetState = sheetState,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = "Que nom vols posar-li?",
+                    fontSize = 30.sp,
+                    fontFamily = sky,
+                    textAlign = TextAlign.Center)
+                OutlinedTextField(
+                    value = name!!,
+                    onValueChange = { myViewModel.changeName(it)},
+                    label = { Text("Nom Ubicació") },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Green,
+                        unfocusedBorderColor = Color.Black
+                    ))
+                Button(onClick = {
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            myViewModel.changeBottomSheetState()
+                        }
                     }
+                }) {
+                    Text("Hide bottom sheet")
                 }
-            }) {
-                Text("Hide bottom sheet")
             }
         }
     }
