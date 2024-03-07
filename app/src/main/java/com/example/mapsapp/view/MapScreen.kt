@@ -13,10 +13,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.mapsapp.viewModel.MyViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -26,34 +34,37 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
 @Composable
-fun MapScreen(state: DrawerState ,navigationController: NavController) {
-    Scaffold (topBar = { MyTopAppBar(state) }){paddingValues ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
-            Map(navigationController)
+fun MapScreen(state: DrawerState, navigationController: NavController, myViewModel: MyViewModel) {
+    Scaffold(topBar = { MyTopAppBar(state) }) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Map(navigationController, myViewModel)
         }
     }
 
 }
 
 @Composable
-fun Map(navigationController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        val itb = LatLng(41.4534265, 2.1837151)
-        val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(itb, 14f)
+fun Map(navigationController: NavController, myViewModel: MyViewModel) {
+    val markers by myViewModel.markers.observeAsState()
+    val itb = LatLng(41.4534265, 2.1837151)
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(itb, 14f)
+    }
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState,
+        onMapLongClick = { longClickedLatLng ->
+            myViewModel.addMarker(longClickedLatLng)
         }
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-        ) {
+    ) {
+        markers!!.forEach { marker ->
+            println("marca: $marker")
             Marker(
-                state = MarkerState(position = itb),
+                state = MarkerState(position = marker),
                 title = "ITB",
                 snippet = "Marker at ITB"
             )
@@ -61,18 +72,21 @@ fun Map(navigationController: NavController) {
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar(state:DrawerState) {
+fun MyTopAppBar(state: DrawerState) {
     val scope = rememberCoroutineScope()
     TopAppBar(
         title = {},
-            navigationIcon = {
-                IconButton(onClick = { scope.launch {
+        navigationIcon = {
+            IconButton(onClick = {
+                scope.launch {
                     state.open()
-                } }) {
-                    Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menu")
                 }
+            }) {
+                Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menu")
             }
+        }
     )
 }
