@@ -1,21 +1,32 @@
 package com.example.mapsapp.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -29,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mapsapp.viewModel.MyViewModel
@@ -66,15 +78,15 @@ fun Map(navigationController: NavController, myViewModel: MyViewModel) {
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         onMapLongClick = { longClickedLatLng ->
-            myViewModel.addMarker(longClickedLatLng)
+            myViewModel.changePosMarker(longClickedLatLng)
             myViewModel.changeBottomSheetState()
         }
     ) {
         markers!!.forEach { marker ->
             println("marca: $marker")
             Marker(
-                state = MarkerState(position = marker),
-                title = "ITB",
+                state = MarkerState(position = marker.pos),
+                title = marker.name,
                 snippet = "Marker at ITB"
             )
         }
@@ -106,6 +118,8 @@ fun BottomSheet( myViewModel: MyViewModel) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     val show by myViewModel.showBottomSheet.observeAsState()
+    val name by myViewModel.nameMaker.observeAsState("")
+    val press by myViewModel.press.observeAsState()
     if (show!!) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -113,16 +127,53 @@ fun BottomSheet( myViewModel: MyViewModel) {
             },
             sheetState = sheetState
         ) {
-            // Sheet content
-            Button(onClick = {
-                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        myViewModel.changeBottomSheetState()
+            OutlinedTextField(
+                value = name!!,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                onValueChange = {
+                    if (it.isEmpty()) myViewModel.changePress(false)
+                    else myViewModel.changePress(true)
+                    myViewModel.changeNameMarker(it)},
+                label = { Text("Enter marker name") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Green,
+                    unfocusedBorderColor = Color.Black
+                ))
+            Spacer(modifier = Modifier.height(20.dp))
+            Row (horizontalArrangement = Arrangement.Center, modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 5.dp, vertical = 5.dp)){
+                Button(onClick = {
+                    myViewModel.changeNameMarker("")
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            myViewModel.changeBottomSheetState()
+                        }
                     }
+                },
+                    modifier = Modifier.fillMaxHeight(0.1f).width(150.dp),
+                    shape = RoundedCornerShape(25.dp)) {
+                    Text("Cancel")
                 }
-            }) {
-                Text("Hide bottom sheet")
+                Spacer(modifier = Modifier.width(25.dp))
+                Button(onClick = {
+                    myViewModel.addMarker()
+                    myViewModel.changeNameMarker("")
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            myViewModel.changeBottomSheetState()
+                        }
+                    }
+                },
+                    enabled = press!!,
+                    modifier = Modifier.fillMaxHeight(0.1f).width(150.dp),
+                    shape = RoundedCornerShape(25.dp)) {
+                    Text("Add marker")
+                }
             }
+
         }
     }
 }
