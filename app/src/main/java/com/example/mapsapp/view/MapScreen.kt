@@ -146,7 +146,7 @@ fun BottomSheet( myViewModel: MyViewModel) {
                     unfocusedBorderColor = Color.Black
                 ))
             Spacer(modifier = Modifier.height(20.dp))
-            eleccionTipo(myViewModel)
+            EleccionTipo(myViewModel)
             Spacer(modifier = Modifier.height(20.dp))
             Row (horizontalArrangement = Arrangement.Center, modifier = Modifier
                 .fillMaxWidth()
@@ -189,7 +189,7 @@ fun BottomSheet( myViewModel: MyViewModel) {
 }
 
 @Composable
-fun eleccionTipo(myViewModel: MyViewModel) {
+fun EleccionTipo(myViewModel: MyViewModel) {
     val typeMarker by myViewModel.typeMarker.observeAsState()
     Row {
         Row (verticalAlignment = Alignment.CenterVertically,
