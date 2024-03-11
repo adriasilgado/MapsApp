@@ -24,6 +24,8 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -33,6 +35,8 @@ import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.viewModel.MyViewModel
 import kotlinx.coroutines.launch
+
+val sky = FontFamily(Font(R.font.skyland))
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
