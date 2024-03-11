@@ -24,6 +24,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -38,10 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.android.gms.maps.model.CameraPosition
@@ -142,6 +146,8 @@ fun BottomSheet( myViewModel: MyViewModel) {
                     unfocusedBorderColor = Color.Black
                 ))
             Spacer(modifier = Modifier.height(20.dp))
+            eleccionTipo(myViewModel)
+            Spacer(modifier = Modifier.height(20.dp))
             Row (horizontalArrangement = Arrangement.Center, modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 5.dp, vertical = 5.dp)){
@@ -153,7 +159,9 @@ fun BottomSheet( myViewModel: MyViewModel) {
                         }
                     }
                 },
-                    modifier = Modifier.fillMaxHeight(0.1f).width(150.dp),
+                    modifier = Modifier
+                        .fillMaxHeight(0.1f)
+                        .width(150.dp),
                     shape = RoundedCornerShape(25.dp)) {
                     Text("Cancel")
                 }
@@ -168,12 +176,55 @@ fun BottomSheet( myViewModel: MyViewModel) {
                     }
                 },
                     enabled = press!!,
-                    modifier = Modifier.fillMaxHeight(0.1f).width(150.dp),
+                    modifier = Modifier
+                        .fillMaxHeight(0.1f)
+                        .width(150.dp),
                     shape = RoundedCornerShape(25.dp)) {
                     Text("Add marker")
                 }
             }
 
+        }
+    }
+}
+
+@Composable
+fun eleccionTipo(myViewModel: MyViewModel) {
+    val typeMarker by myViewModel.typeMarker.observeAsState()
+    Row {
+        Row (verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth(0.4f)){
+            RadioButton(
+                selected = typeMarker == "RESTAURANTE",
+                onClick = { myViewModel.changeTypeMarker("RESTAURANTE") },
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = Color(73, 235, 75),
+                    unselectedColor = Color(210, 51, 36 )
+                )
+            )
+        }
+        Row (verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(0.6f).padding(start = 10.dp)){
+            RadioButton(
+                selected = typeMarker == "SUPERMERCADO",
+                onClick = { myViewModel.changeTypeMarker("SUPERMERCADO") },
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = Color.Green,
+                    unselectedColor = Color.Red
+                )
+            )
+        }
+        Row (verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(0.3f)){
+            RadioButton(
+                selected = typeMarker == "HOTEL",
+                onClick = { myViewModel.changeTypeMarker("HOTEL") },
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = Color.Green,
+                    unselectedColor = Color.Red
+                )
+            )
         }
     }
 }

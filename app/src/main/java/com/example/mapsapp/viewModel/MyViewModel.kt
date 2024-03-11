@@ -17,6 +17,8 @@ class MyViewModel: ViewModel() {
     val posMarker = _posMarker
     private val _press = MutableLiveData<Boolean>(false)
     val press = _press
+    private val _typeMarker = MutableLiveData<String>("")
+    val typeMarker = _typeMarker
 
     fun addMarker(){
         val currentList = _markers.value.orEmpty().toMutableList()
@@ -38,5 +40,9 @@ class MyViewModel: ViewModel() {
 
     fun changePress(press:Boolean){
         _press.value = press
+    }
+
+    fun changeTypeMarker(type:String){
+        _typeMarker.value = type
     }
 }

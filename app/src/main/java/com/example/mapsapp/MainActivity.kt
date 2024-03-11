@@ -22,6 +22,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.Font
@@ -34,6 +36,8 @@ import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.viewModel.MyViewModel
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.launch
 
 val sky = FontFamily(Font(R.font.skyland))
@@ -61,6 +65,7 @@ fun MyDrawer(myViewModel: MyViewModel) {
     val navigationController = rememberNavController()
     val scope = rememberCoroutineScope()
     val state:DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val markers by myViewModel.markers.observeAsState()
     ModalNavigationDrawer(drawerState = state, gesturesEnabled = false ,drawerContent = {
     ModalDrawerSheet {
         IconButton(onClick = { scope.launch {
@@ -69,13 +74,15 @@ fun MyDrawer(myViewModel: MyViewModel) {
             Icon(imageVector = Icons.Filled.Close, contentDescription = "Close")
         }
         Divider()
-        NavigationDrawerItem(label = {Text("Item 1")}, selected = false,
-            onClick = {
-        scope.launch {
-            state.close()
+        markers!!.forEach { marker ->
+            NavigationDrawerItem(label = {Text(marker.name)}, selected = false,
+                onClick = {
+                    scope.launch {
+                        state.close()
+                    }
+                    //navegar
+                })
         }
-        //navegar
-            })
     } }) {
         MapScreen(state, navigationController, myViewModel)
     }
