@@ -1,5 +1,6 @@
 package com.example.mapsapp.view
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -208,8 +210,16 @@ fun EleccionTipo(myViewModel: MyViewModel) {
         for (i in 0 until myViewModel.listaIconos.size) {
             Box (modifier = Modifier
                 .aspectRatio(1f)
-                .weight(1f)) {
-                IconButton(modifier = Modifier.fillMaxSize(), onClick = { myViewModel.changeTypeMarker(iconoSelect(i))}) {
+                .weight(1f))
+                    {
+                IconButton(modifier = Modifier
+                    .fillMaxSize()
+                    .border(
+                    BorderStroke(
+                        width = 2.dp,
+                        color = if (typeMarker == iconoSelect(i)) Color.Green else Color.Transparent
+                    ),
+                    shape = CircleShape), onClick = { myViewModel.changeTypeMarker(iconoSelect(i))}) {
                     Image(painter = painterResource(id = myViewModel.listaIconos[i]), contentDescription = "icon")
                 }
             }
