@@ -1,10 +1,13 @@
 package com.example.mapsapp.view
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,11 +46,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mapsapp.R
 import com.example.mapsapp.viewModel.MyViewModel
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -91,7 +98,8 @@ fun Map(navigationController: NavController, myViewModel: MyViewModel) {
             Marker(
                 state = MarkerState(position = marker.pos),
                 title = marker.name,
-                snippet = "Marker at ITB"
+                snippet = "Marker at ITB",
+                icon = BitmapDescriptorFactory.fromResource(myViewModel.whatIcon())
             )
         }
     }
@@ -162,7 +170,8 @@ fun BottomSheet( myViewModel: MyViewModel) {
                     modifier = Modifier
                         .fillMaxHeight(0.1f)
                         .width(150.dp),
-                    shape = RoundedCornerShape(25.dp)) {
+                    shape = RoundedCornerShape(25.dp),
+                    colors = ButtonDefaults.buttonColors(Color.DarkGray)) {
                     Text("Cancel")
                 }
                 Spacer(modifier = Modifier.width(25.dp))
@@ -179,7 +188,9 @@ fun BottomSheet( myViewModel: MyViewModel) {
                     modifier = Modifier
                         .fillMaxHeight(0.1f)
                         .width(150.dp),
-                    shape = RoundedCornerShape(25.dp)) {
+                    shape = RoundedCornerShape(25.dp),
+                    colors = ButtonDefaults.buttonColors(Color.Black))
+                    {
                     Text("Add marker")
                 }
             }
@@ -191,41 +202,30 @@ fun BottomSheet( myViewModel: MyViewModel) {
 @Composable
 fun EleccionTipo(myViewModel: MyViewModel) {
     val typeMarker by myViewModel.typeMarker.observeAsState()
-    Row {
-        Row (verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth(0.4f)){
-            RadioButton(
-                selected = typeMarker == "RESTAURANTE",
-                onClick = { myViewModel.changeTypeMarker("RESTAURANTE") },
-                colors = RadioButtonDefaults.colors(
-                    selectedColor = Color(73, 235, 75),
-                    unselectedColor = Color(210, 51, 36 )
-                )
-            )
+    Row (modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)){
+        for (i in 0 until myViewModel.listaIconos.size) {
+            Box (modifier = Modifier
+                .aspectRatio(1f)
+                .weight(1f)) {
+                IconButton(modifier = Modifier.fillMaxSize(), onClick = { myViewModel.changeTypeMarker(iconoSelect(i))}) {
+                    Image(painter = painterResource(id = myViewModel.listaIconos[i]), contentDescription = "icon")
+                }
+            }
         }
-        Row (verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(0.6f).padding(start = 10.dp)){
-            RadioButton(
-                selected = typeMarker == "SUPERMERCADO",
-                onClick = { myViewModel.changeTypeMarker("SUPERMERCADO") },
-                colors = RadioButtonDefaults.colors(
-                    selectedColor = Color.Green,
-                    unselectedColor = Color.Red
-                )
-            )
-        }
-        Row (verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(0.3f)){
-            RadioButton(
-                selected = typeMarker == "HOTEL",
-                onClick = { myViewModel.changeTypeMarker("HOTEL") },
-                colors = RadioButtonDefaults.colors(
-                    selectedColor = Color.Green,
-                    unselectedColor = Color.Red
-                )
-            )
-        }
+    }
+}
+
+fun iconoSelect(iterador:Int):String {
+    when (iterador) {
+        0 -> return "avion"
+        1 -> return "gasolinera"
+        2 -> return "hospital"
+        3 -> return "hotel"
+        4 -> return "restaurante"
+        5 -> return "supermercado"
+        else -> return ""
     }
 }
 

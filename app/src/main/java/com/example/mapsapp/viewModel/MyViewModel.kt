@@ -2,6 +2,7 @@ package com.example.mapsapp.viewModel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.mapsapp.R
 import com.example.mapsapp.model.Marca
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -19,6 +20,8 @@ class MyViewModel: ViewModel() {
     val press = _press
     private val _typeMarker = MutableLiveData<String>("")
     val typeMarker = _typeMarker
+    val listaIconos = listOf(R.drawable.aviongrande, R.drawable.gasolineragrande, R.drawable.hospitalgrande, R.drawable.hotelgrande, R.drawable.restgrande, R.drawable.supergrande)
+    val listaMarcadores = listOf(R.drawable.airport, R.drawable.aviongrande, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
 
     fun addMarker(){
         val currentList = _markers.value.orEmpty().toMutableList()
@@ -44,5 +47,17 @@ class MyViewModel: ViewModel() {
 
     fun changeTypeMarker(type:String){
         _typeMarker.value = type
+    }
+
+    fun whatIcon():Int {
+        return when(_typeMarker.value){
+            "avion" -> listaMarcadores[0]
+            "gasolinera" -> listaMarcadores[1]
+            "hospital" -> listaMarcadores[2]
+            "hotel" -> listaMarcadores[3]
+            "restaurante" -> listaMarcadores[4]
+            "supermercado" -> listaMarcadores[5]
+            else -> 0
+        }
     }
 }
