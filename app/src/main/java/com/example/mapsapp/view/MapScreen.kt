@@ -162,7 +162,6 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
     val show by myViewModel.showBottomSheet.observeAsState()
     val name by myViewModel.nameMaker.observeAsState("")
     val press by myViewModel.press.observeAsState()
-    val cameraPress by myViewModel.cameraPress.observeAsState()
     if (show!!) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -188,17 +187,8 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
             EleccionTipo(myViewModel)
             Spacer(modifier = Modifier.height(20.dp))
             IconButton(onClick = {
-                myViewModel.changeCameraPress() }) {
+                navigationController.navigate(Routes.CameraScreen.route) }) {
                 Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Back")
-            }
-            if (cameraPress!!) {
-                val permissionState = rememberPermissionState(permission = android.Manifest.permission.CAMERA)
-                LaunchedEffect(Unit) {
-                    permissionState.launchPermissionRequest()
-                }
-                if (permissionState.status.isGranted) {
-                    navigationController.navigate(Routes.CameraScreen.route)
-                }
             }
             Spacer(modifier = Modifier.height(20.dp))
             Row (horizontalArrangement = Arrangement.Center, modifier = Modifier

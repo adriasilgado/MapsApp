@@ -20,8 +20,6 @@ class MyViewModel: ViewModel() {
     val press = _press
     private val _typeMarker = MutableLiveData<String>("avion")
     val typeMarker = _typeMarker
-    private val _cameraPress = MutableLiveData<Boolean>(false)
-    val cameraPress = _cameraPress
     val listaIconos = listOf(R.drawable.aviongrande, R.drawable.gasolineragrande, R.drawable.hospitalgrande, R.drawable.hotelgrande, R.drawable.restgrande, R.drawable.supergrande)
     val listaMarcadores = listOf(R.drawable.airport, R.drawable.fillingstation, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
 
@@ -61,9 +59,5 @@ class MyViewModel: ViewModel() {
             "supermercado" -> listaMarcadores[5]
             else -> 0
         }
-    }
-
-    fun changeCameraPress(){
-        _cameraPress.value = true
     }
 }
