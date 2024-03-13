@@ -4,5 +4,6 @@ import com.google.android.gms.maps.model.LatLng
 
 data class Marca (
     val pos:LatLng,
-    val name:String
+    val name:String,
+    val tipo:String
 )

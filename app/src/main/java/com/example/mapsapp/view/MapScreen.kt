@@ -1,5 +1,9 @@
 package com.example.mapsapp.view
 
+import android.annotation.SuppressLint
+import android.location.Location
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -19,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,6 +42,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -50,21 +56,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mapsapp.MainActivity
 import com.example.mapsapp.R
+import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.viewModel.MyViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun MapScreen(state: DrawerState, navigationController: NavController, myViewModel: MyViewModel) {
     Scaffold(topBar = { MyTopAppBar(state) }) { paddingValues ->
@@ -74,22 +90,35 @@ fun MapScreen(state: DrawerState, navigationController: NavController, myViewMod
                 .padding(paddingValues)
         ) {
             Map(navigationController, myViewModel)
-            BottomSheet(myViewModel)
+            BottomSheet(navigationController, myViewModel)
         }
     }
 
 }
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+@SuppressLint("MissingPermission")
 @Composable
 fun Map(navigationController: NavController, myViewModel: MyViewModel) {
     val markers by myViewModel.markers.observeAsState()
-    val itb = LatLng(41.4534265, 2.1837151)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(itb, 14f)
+    val context = LocalContext.current
+    val fusedLocationProveidorClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+    var lastKnownLocation by remember { mutableStateOf<Location?>(null) }
+    var deviceLatLng by remember { mutableStateOf(LatLng(0.0, 0.0)) }
+    val cameraPositionState = rememberCameraPositionState{CameraPosition.fromLatLngZoom(deviceLatLng, 18f)}
+    val locationResult = fusedLocationProveidorClient.getCurrentLocation(100, null)
+
+    locationResult.addOnCompleteListener(context as MainActivity) { task ->
+        if (task.isSuccessful) {
+            lastKnownLocation = task.result
+            deviceLatLng = LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
+        }
     }
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
+        properties = MapProperties(isBuildingEnabled = true, mapType = MapType.NORMAL, isMyLocationEnabled = true),
         onMapLongClick = { longClickedLatLng ->
             myViewModel.changePosMarker(longClickedLatLng)
             myViewModel.changeBottomSheetState()
@@ -100,8 +129,7 @@ fun Map(navigationController: NavController, myViewModel: MyViewModel) {
             Marker(
                 state = MarkerState(position = marker.pos),
                 title = marker.name,
-                snippet = "Marker at ITB",
-                icon = BitmapDescriptorFactory.fromResource(myViewModel.whatIcon())
+                icon = BitmapDescriptorFactory.fromResource(myViewModel.whatIcon(marker.tipo))
             )
         }
     }
@@ -126,14 +154,15 @@ fun MyTopAppBar(state: DrawerState) {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun BottomSheet( myViewModel: MyViewModel) {
+fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     val show by myViewModel.showBottomSheet.observeAsState()
     val name by myViewModel.nameMaker.observeAsState("")
     val press by myViewModel.press.observeAsState()
+    val cameraPress by myViewModel.cameraPress.observeAsState()
     if (show!!) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -158,6 +187,20 @@ fun BottomSheet( myViewModel: MyViewModel) {
             Spacer(modifier = Modifier.height(20.dp))
             EleccionTipo(myViewModel)
             Spacer(modifier = Modifier.height(20.dp))
+            IconButton(onClick = {
+                myViewModel.changeCameraPress() }) {
+                Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Back")
+            }
+            if (cameraPress!!) {
+                val permissionState = rememberPermissionState(permission = android.Manifest.permission.CAMERA)
+                LaunchedEffect(Unit) {
+                    permissionState.launchPermissionRequest()
+                }
+                if (permissionState.status.isGranted) {
+                    navigationController.navigate(Routes.CameraScreen.route)
+                }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
             Row (horizontalArrangement = Arrangement.Center, modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 5.dp, vertical = 5.dp)){
@@ -180,6 +223,7 @@ fun BottomSheet( myViewModel: MyViewModel) {
                 Button(onClick = {
                     myViewModel.addMarker()
                     myViewModel.changeNameMarker("")
+                    myViewModel.changeTypeMarker("avion")
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             myViewModel.changeBottomSheetState()
@@ -215,11 +259,12 @@ fun EleccionTipo(myViewModel: MyViewModel) {
                 IconButton(modifier = Modifier
                     .fillMaxSize()
                     .border(
-                    BorderStroke(
-                        width = 2.dp,
-                        color = if (typeMarker == iconoSelect(i)) Color.Green else Color.Transparent
-                    ),
-                    shape = CircleShape), onClick = { myViewModel.changeTypeMarker(iconoSelect(i))}) {
+                        BorderStroke(
+                            width = 2.dp,
+                            color = if (typeMarker == iconoSelect(i)) Color.Green else Color.Transparent
+                        ),
+                        shape = CircleShape
+                    ), onClick = { myViewModel.changeTypeMarker(iconoSelect(i))}) {
                     Image(painter = painterResource(id = myViewModel.listaIconos[i]), contentDescription = "icon")
                 }
             }

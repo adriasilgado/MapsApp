@@ -1,9 +1,11 @@
 package com.example.mapsapp
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
@@ -22,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,8 +37,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.ui.theme.MapsAppTheme
+import com.example.mapsapp.view.CameraScreen
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.viewModel.MyViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.launch
@@ -43,6 +50,8 @@ import kotlinx.coroutines.launch
 val sky = FontFamily(Font(R.font.skyland))
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         val myViewModel by viewModels<MyViewModel>()
         super.onCreate(savedInstanceState)
@@ -60,6 +69,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MyDrawer(myViewModel: MyViewModel) {
     val navigationController = rememberNavController()
@@ -84,7 +95,22 @@ fun MyDrawer(myViewModel: MyViewModel) {
                 })
         }
     } }) {
-        MapScreen(state, navigationController, myViewModel)
+        val navigationController = rememberNavController()
+        NavHost(
+            navController = navigationController,
+            startDestination = Routes.MapScreen.route) {
+            composable(Routes.MapScreen.route) { MapScreen(state ,navigationController, myViewModel) }
+            composable(Routes.CameraScreen.route) { CameraScreen(navigationController, myViewModel) }}
+        val permissionState = rememberPermissionState(permission = android.Manifest.permission.ACCESS_FINE_LOCATION)
+        LaunchedEffect(Unit) {
+            permissionState.launchPermissionRequest()
+        }
+        if (permissionState.status.isGranted) {
+            MapScreen(state, navigationController, myViewModel)
+        }
+        else {
+            Text("Need permission")
+        }
     }
 }
 

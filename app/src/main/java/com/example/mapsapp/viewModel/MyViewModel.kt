@@ -18,14 +18,16 @@ class MyViewModel: ViewModel() {
     val posMarker = _posMarker
     private val _press = MutableLiveData<Boolean>(false)
     val press = _press
-    private val _typeMarker = MutableLiveData<String>("")
+    private val _typeMarker = MutableLiveData<String>("avion")
     val typeMarker = _typeMarker
+    private val _cameraPress = MutableLiveData<Boolean>(false)
+    val cameraPress = _cameraPress
     val listaIconos = listOf(R.drawable.aviongrande, R.drawable.gasolineragrande, R.drawable.hospitalgrande, R.drawable.hotelgrande, R.drawable.restgrande, R.drawable.supergrande)
-    val listaMarcadores = listOf(R.drawable.airport, R.drawable.aviongrande, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
+    val listaMarcadores = listOf(R.drawable.airport, R.drawable.fillingstation, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
 
     fun addMarker(){
         val currentList = _markers.value.orEmpty().toMutableList()
-        currentList.add(Marca(_posMarker.value!!, _nameMarker.value!!))
+        currentList.add(Marca(_posMarker.value!!, _nameMarker.value!!, _typeMarker.value!!))
         _markers.value = currentList
     }
 
@@ -49,8 +51,8 @@ class MyViewModel: ViewModel() {
         _typeMarker.value = type
     }
 
-    fun whatIcon():Int {
-        return when(_typeMarker.value){
+    fun whatIcon(tipo:String):Int {
+        return when(tipo){
             "avion" -> listaMarcadores[0]
             "gasolinera" -> listaMarcadores[1]
             "hospital" -> listaMarcadores[2]
@@ -59,5 +61,9 @@ class MyViewModel: ViewModel() {
             "supermercado" -> listaMarcadores[5]
             else -> 0
         }
+    }
+
+    fun changeCameraPress(){
+        _cameraPress.value = true
     }
 }
