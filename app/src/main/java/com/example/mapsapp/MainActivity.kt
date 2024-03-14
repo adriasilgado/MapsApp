@@ -49,7 +49,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.launch
 
-val sky = FontFamily(Font(R.font.skyland))
+val sky = FontFamily(Font(R.font.bloom))
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -92,7 +92,7 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
         }
         Divider()
         markers!!.forEach { marker ->
-            NavigationDrawerItem(label = {Text(marker.name)}, selected = false,
+            NavigationDrawerItem(label = {Text(marker.name, fontFamily = sky)}, selected = false,
                 onClick = {
                     scope.launch {
                         state.close()

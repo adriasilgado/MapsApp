@@ -65,6 +65,7 @@ import com.example.mapsapp.MainActivity
 import com.example.mapsapp.MyDrawer
 import com.example.mapsapp.R
 import com.example.mapsapp.navigation.Routes
+import com.example.mapsapp.sky
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -131,7 +132,6 @@ fun Map(navigationController: NavController, myViewModel: MyViewModel) {
         }
     ) {
         markers!!.forEach { marker ->
-            println("marca: $marker")
             Marker(
                 state = MarkerState(position = marker.pos),
                 title = marker.name,
@@ -184,7 +184,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                     if (it.isEmpty()) myViewModel.changePress(false)
                     else myViewModel.changePress(true)
                     myViewModel.changeNameMarker(it)},
-                label = { Text("Enter marker name") },
+                label = { Text("Enter marker name", fontFamily = sky) },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Green,
                     unfocusedBorderColor = Color.Black
@@ -213,7 +213,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                         .width(150.dp),
                     shape = RoundedCornerShape(25.dp),
                     colors = ButtonDefaults.buttonColors(Color.DarkGray)) {
-                    Text("Cancel")
+                    Text("Cancel", fontFamily = sky)
                 }
                 Spacer(modifier = Modifier.width(25.dp))
                 Button(onClick = {
@@ -233,7 +233,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                     shape = RoundedCornerShape(25.dp),
                     colors = ButtonDefaults.buttonColors(Color.Black))
                     {
-                    Text("Add marker")
+                    Text("Add marker", fontFamily = sky)
                 }
             }
 
