@@ -32,12 +32,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.CameraScreen
+import com.example.mapsapp.view.EstructuraMap
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -62,7 +64,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MyDrawer(myViewModel)
+                    val navigationController = rememberNavController()
+                    NavHost(
+                        navController = navigationController,
+                        startDestination = Routes.MapScreen.route) {
+                        composable(Routes.MapScreen.route) { MapScreen(navigationController, myViewModel) }
+                        composable(Routes.CameraScreen.route) { CameraScreen(navigationController, myViewModel) }}
                 }
             }
         }
@@ -72,8 +79,7 @@ class MainActivity : ComponentActivity() {
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MyDrawer(myViewModel: MyViewModel) {
-    val navigationController = rememberNavController()
+fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
     val scope = rememberCoroutineScope()
     val state:DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val markers by myViewModel.markers.observeAsState()
@@ -95,18 +101,12 @@ fun MyDrawer(myViewModel: MyViewModel) {
                 })
         }
     } }) {
-        val navigationController = rememberNavController()
-        NavHost(
-            navController = navigationController,
-            startDestination = Routes.MapScreen.route) {
-            composable(Routes.MapScreen.route) { MapScreen(state ,navigationController, myViewModel) }
-            composable(Routes.CameraScreen.route) { CameraScreen(navigationController, myViewModel) }}
         val permissionState = rememberPermissionState(permission = android.Manifest.permission.ACCESS_FINE_LOCATION)
         LaunchedEffect(Unit) {
             permissionState.launchPermissionRequest()
         }
         if (permissionState.status.isGranted) {
-            MapScreen(state, navigationController, myViewModel)
+            EstructuraMap(state, navigationController, myViewModel)
         }
         else {
             Text("Need permission")

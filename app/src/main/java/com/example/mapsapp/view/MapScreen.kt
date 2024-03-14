@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mapsapp.MainActivity
+import com.example.mapsapp.MyDrawer
 import com.example.mapsapp.R
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.viewModel.MyViewModel
@@ -82,7 +83,13 @@ import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun MapScreen(state: DrawerState, navigationController: NavController, myViewModel: MyViewModel) {
+fun MapScreen(navigationController: NavController, myViewModel: MyViewModel) {
+    MyDrawer(myViewModel, navigationController)
+}
+
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+@Composable
+fun EstructuraMap(state: DrawerState, navigationController: NavController, myViewModel: MyViewModel) {
     Scaffold(topBar = { MyTopAppBar(state) }) { paddingValues ->
         Box(
             modifier = Modifier
@@ -93,7 +100,6 @@ fun MapScreen(state: DrawerState, navigationController: NavController, myViewMod
             BottomSheet(navigationController, myViewModel)
         }
     }
-
 }
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
