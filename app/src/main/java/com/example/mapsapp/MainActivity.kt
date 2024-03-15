@@ -33,13 +33,17 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.CameraScreen
+import com.example.mapsapp.view.DetailScreen
 import com.example.mapsapp.view.EstructuraMap
+import com.example.mapsapp.view.LocationsScreen
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -69,7 +73,17 @@ class MainActivity : ComponentActivity() {
                         navController = navigationController,
                         startDestination = Routes.MapScreen.route) {
                         composable(Routes.MapScreen.route) { MapScreen(navigationController, myViewModel) }
-                        composable(Routes.CameraScreen.route) { CameraScreen(navigationController, myViewModel) }}
+                        composable(Routes.CameraScreen.route) { CameraScreen(navigationController, myViewModel) }
+                        composable(Routes.LocationsScreen.route) { LocationsScreen(navigationController, myViewModel) }
+                        composable(
+                            Routes.DetailScreen.route,
+                            arguments = listOf(
+                                navArgument("name") {type = NavType.StringType})) {
+                                backStackEntry ->
+                            DetailScreen(
+                                backStackEntry.arguments?.getString("name").orEmpty(),
+                                navigationController, myViewModel
+                            )}}
                 }
             }
         }
@@ -82,7 +96,6 @@ class MainActivity : ComponentActivity() {
 fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
     val scope = rememberCoroutineScope()
     val state:DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val markers by myViewModel.markers.observeAsState()
     ModalNavigationDrawer(drawerState = state, gesturesEnabled = false ,drawerContent = {
     ModalDrawerSheet {
         IconButton(onClick = { scope.launch {
@@ -91,15 +104,26 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
             Icon(imageVector = Icons.Filled.Close, contentDescription = "Close")
         }
         Divider()
-        markers!!.forEach { marker ->
-            NavigationDrawerItem(label = {Text(marker.name, fontFamily = sky)}, selected = false,
-                onClick = {
-                    scope.launch {
-                        state.close()
-                    }
-                    //navegar
-                })
-        }
+        NavigationDrawerItem(label = {Text("Locations", fontFamily = sky)}, selected = false,
+            onClick = {
+                scope.launch {
+                    state.close()
+                }
+                navigationController.navigate(Routes.LocationsScreen.route)
+            })
+        NavigationDrawerItem(label = {Text("Map", fontFamily = sky)}, selected = false,
+            onClick = {
+                scope.launch {
+                    state.close()
+                }
+            })
+        NavigationDrawerItem(label = {Text("Add Marker", fontFamily = sky)}, selected = false,
+            onClick = {
+                scope.launch {
+                    state.close()
+                }
+                //navegar
+            })
     } }) {
         val permissionState = rememberPermissionState(permission = android.Manifest.permission.ACCESS_FINE_LOCATION)
         LaunchedEffect(Unit) {

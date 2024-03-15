@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -163,11 +164,12 @@ fun MyTopAppBar(state: DrawerState) {
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(true)
     val scope = rememberCoroutineScope()
     val show by myViewModel.showBottomSheet.observeAsState()
     val name by myViewModel.nameMaker.observeAsState("")
     val press by myViewModel.press.observeAsState()
+    val photoMarker by myViewModel.photoMarker.observeAsState()
     if (show!!) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -192,9 +194,20 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
             Spacer(modifier = Modifier.height(20.dp))
             EleccionTipo(myViewModel)
             Spacer(modifier = Modifier.height(20.dp))
-            IconButton(onClick = {
-                navigationController.navigate(Routes.CameraScreen.route) }) {
-                Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Back")
+            if (photoMarker != null) {
+                Image(photoMarker!!.asImageBitmap(), contentDescription = "photo",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .padding(horizontal = 16.dp))
+            }
+            else {
+                IconButton(onClick = {
+                    navigationController.navigate(Routes.CameraScreen.route) },
+                    modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Back",
+                        modifier = Modifier.fillMaxSize())
+                }
             }
             Spacer(modifier = Modifier.height(20.dp))
             Row (horizontalArrangement = Arrangement.Center, modifier = Modifier
@@ -202,6 +215,8 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 .padding(horizontal = 5.dp, vertical = 5.dp)){
                 Button(onClick = {
                     myViewModel.changeNameMarker("")
+                    myViewModel.changePhotoMarker(null)
+                    myViewModel.changeTypeMarker("avion")
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             myViewModel.changeBottomSheetState()
@@ -220,6 +235,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                     myViewModel.addMarker()
                     myViewModel.changeNameMarker("")
                     myViewModel.changeTypeMarker("avion")
+                    myViewModel.changePhotoMarker(null)
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             myViewModel.changeBottomSheetState()

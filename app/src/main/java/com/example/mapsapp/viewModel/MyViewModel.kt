@@ -1,5 +1,6 @@
 package com.example.mapsapp.viewModel
 
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
@@ -16,6 +17,8 @@ class MyViewModel: ViewModel() {
     val nameMaker = _nameMarker
     private val _posMarker = MutableLiveData<LatLng>()
     val posMarker = _posMarker
+    private val _photoMaker = MutableLiveData<Bitmap?>()
+    val photoMarker = _photoMaker
     private val _press = MutableLiveData<Boolean>(false)
     val press = _press
     private val _typeMarker = MutableLiveData<String>("avion")
@@ -25,7 +28,7 @@ class MyViewModel: ViewModel() {
 
     fun addMarker(){
         val currentList = _markers.value.orEmpty().toMutableList()
-        currentList.add(Marca(_posMarker.value!!, _nameMarker.value!!, _typeMarker.value!!))
+        currentList.add(Marca(_posMarker.value!!, _nameMarker.value!!, _typeMarker.value!!, _photoMaker.value))
         _markers.value = currentList
     }
 
@@ -59,5 +62,9 @@ class MyViewModel: ViewModel() {
             "supermercado" -> listaMarcadores[5]
             else -> 0
         }
+    }
+
+    fun changePhotoMarker(photo:Bitmap?){
+        _photoMaker.value = photo
     }
 }

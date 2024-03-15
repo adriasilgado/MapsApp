@@ -3,6 +3,7 @@ package com.example.mapsapp.view
 import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture.OnImageCapturedCallback
@@ -26,9 +27,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -65,9 +70,11 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
             }
         }
         Box(modifier = Modifier
-            .fillMaxSize(0.8f)
-            .border(2.dp, Color.Magenta, shape = RoundedCornerShape(8.dp))) {
+            .fillMaxSize()) {
             CameraPreview(controller = controller, modifier = Modifier.fillMaxSize())
+            IconButton(onClick = { navigationController.navigateUp() }, modifier = Modifier.align(Alignment.TopStart)) {
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back")
+            }
             IconButton(
                 onClick = {
                     controller.cameraSelector =
@@ -76,7 +83,7 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                         } else {
                             CameraSelector.DEFAULT_BACK_CAMERA
                         }},
-                modifier = Modifier.offset(16.dp, 16.dp)) {
+                modifier = Modifier.offset(16.dp, 16.dp).align(Alignment.TopEnd).padding(end = 16.dp)) {
                 Icon(imageVector = Icons.Default.Cameraswitch, contentDescription = "Switch camera")
             }
             Column (
@@ -90,14 +97,18 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                 Button(
                     onClick = {
                         takePhoto(context, controller) { photo ->
-                            //sdfsdf
+                            myViewModel.changePhotoMarker(photo)
+                            navigationController.navigateUp()
                         }
                     },
                     modifier = Modifier
                         .height(64.dp)
                         .width(64.dp)
-                        .align(Alignment.CenterHorizontally),
-                    shape = CircleShape
+                        .align(Alignment.CenterHorizontally)
+                        .border(7.dp, Color(230, 222, 221), shape = CircleShape),
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(
+                        Color.White)
                 ) {
 
                 }
@@ -126,7 +137,19 @@ private fun takePhoto(context: Context, controller:LifecycleCameraController, on
         object: OnImageCapturedCallback() {
             override fun onCaptureSuccess(image: ImageProxy) {
                 super.onCaptureSuccess(image)
-                onPhotoTaken(image.toBitmap())
+                val matri = Matrix().apply{
+                    postRotate(image.imageInfo.rotationDegrees.toFloat())
+                }
+                val rotatedBitmap = Bitmap.createBitmap(
+                    image.toBitmap(),
+                    0,
+                    0,
+                    image.width,
+                    image.height,
+                    matri,
+                    true
+                )
+                onPhotoTaken(rotatedBitmap)
             }
             override fun onError(exception: ImageCaptureException) {
                 super.onError(exception)
