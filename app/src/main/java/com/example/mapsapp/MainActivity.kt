@@ -40,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.ui.theme.MapsAppTheme
+import com.example.mapsapp.view.BottomSheet
 import com.example.mapsapp.view.CameraScreen
 import com.example.mapsapp.view.DetailScreen
 import com.example.mapsapp.view.EstructuraMap
@@ -122,7 +123,7 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
                 scope.launch {
                     state.close()
                 }
-                //navegar
+                myViewModel.changeBottomSheetState()
             })
     } }) {
         val permissionState = rememberPermissionState(permission = android.Manifest.permission.ACCESS_FINE_LOCATION)
