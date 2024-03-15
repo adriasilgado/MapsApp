@@ -64,6 +64,18 @@ class MyViewModel: ViewModel() {
         }
     }
 
+    fun whatIconBig(tipo:String):Int {
+        return when(tipo){
+            "avion" -> listaIconos[0]
+            "gasolinera" -> listaIconos[1]
+            "hospital" -> listaIconos[2]
+            "hotel" -> listaIconos[3]
+            "restaurante" -> listaIconos[4]
+            "supermercado" -> listaIconos[5]
+            else -> 0
+        }
+    }
+
     fun changePhotoMarker(photo:Bitmap?){
         _photoMaker.value = photo
     }
