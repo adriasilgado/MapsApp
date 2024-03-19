@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mapsapp.navigation.Routes
@@ -43,9 +44,10 @@ import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.BottomSheet
 import com.example.mapsapp.view.CameraScreen
 import com.example.mapsapp.view.DetailScreen
-import com.example.mapsapp.view.EstructuraMap
+import com.example.mapsapp.view.MyScaffold
 import com.example.mapsapp.view.LocationsScreen
 import com.example.mapsapp.view.MapScreen
+import com.example.mapsapp.view.MyScaffold
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -97,6 +99,8 @@ class MainActivity : ComponentActivity() {
 fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
     val scope = rememberCoroutineScope()
     val state:DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val navBackStackEntry by navigationController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     ModalNavigationDrawer(drawerState = state, gesturesEnabled = false ,drawerContent = {
     ModalDrawerSheet {
         IconButton(onClick = { scope.launch {
@@ -117,21 +121,26 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
                 scope.launch {
                     state.close()
                 }
-            })
-        NavigationDrawerItem(label = {Text("Add Marker", fontFamily = sky)}, selected = false,
-            onClick = {
-                scope.launch {
-                    state.close()
+                if (currentRoute != "map_screen") {
+                    navigationController.navigate(Routes.MapScreen.route)
                 }
-                myViewModel.changeBottomSheetState()
             })
+        if (currentRoute == "map_screen") {
+            NavigationDrawerItem(label = {Text("Add Marker", fontFamily = sky)}, selected = false,
+                onClick = {
+                    scope.launch {
+                        state.close()
+                    }
+                    myViewModel.changeBottomSheetState()
+                })
+        }
     } }) {
         val permissionState = rememberPermissionState(permission = android.Manifest.permission.ACCESS_FINE_LOCATION)
         LaunchedEffect(Unit) {
             permissionState.launchPermissionRequest()
         }
         if (permissionState.status.isGranted) {
-            EstructuraMap(state, navigationController, myViewModel)
+            MyScaffold(state, navigationController, myViewModel)
         }
         else {
             Text("Need permission")

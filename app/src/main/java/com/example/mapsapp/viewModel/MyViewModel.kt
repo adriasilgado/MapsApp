@@ -1,6 +1,7 @@
 package com.example.mapsapp.viewModel
 
 import android.graphics.Bitmap
+import androidx.compose.material3.DrawerState
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
@@ -23,6 +24,12 @@ class MyViewModel: ViewModel() {
     val press = _press
     private val _typeMarker = MutableLiveData<String>("avion")
     val typeMarker = _typeMarker
+    private val _cameraPermissionGranted = MutableLiveData(false)
+    val cameraPermissionGranted = _cameraPermissionGranted
+    private val _shouldShowPermissionRationale = MutableLiveData(false)
+    val shouldShowPermissionRationale = _shouldShowPermissionRationale
+    private val _showPermissionDenied = MutableLiveData(false)
+    val showPermissionDenied = _showPermissionDenied
     val listaIconos = listOf(R.drawable.aviongrande, R.drawable.gasolineragrande, R.drawable.hospitalgrande, R.drawable.hotelgrande, R.drawable.restgrande, R.drawable.supergrande)
     val listaMarcadores = listOf(R.drawable.airport, R.drawable.fillingstation, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
 
@@ -78,5 +85,17 @@ class MyViewModel: ViewModel() {
 
     fun changePhotoMarker(photo:Bitmap?){
         _photoMaker.value = photo
+    }
+
+    fun setCameraPermissionGranted(granted:Boolean) {
+        _cameraPermissionGranted.value = granted
+    }
+
+    fun setShouldShowPermissionRationale(should:Boolean) {
+        _shouldShowPermissionRationale.value = should
+    }
+
+    fun setShowPermissionDenied(denied:Boolean) {
+        _showPermissionDenied.value = denied
     }
 }

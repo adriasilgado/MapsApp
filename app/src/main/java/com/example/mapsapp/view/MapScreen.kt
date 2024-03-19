@@ -1,8 +1,16 @@
 package com.example.mapsapp.view
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.location.Location
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -59,9 +67,12 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.mapsapp.MainActivity
 import com.example.mapsapp.MyDrawer
 import com.example.mapsapp.R
@@ -91,15 +102,22 @@ fun MapScreen(navigationController: NavController, myViewModel: MyViewModel) {
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun EstructuraMap(state: DrawerState, navigationController: NavController, myViewModel: MyViewModel) {
+fun MyScaffold(state: DrawerState, navigationController: NavController, myViewModel: MyViewModel) {
+    val navBackStackEntry by navigationController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     Scaffold(topBar = { MyTopAppBar(state) }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Map(navigationController, myViewModel)
-            BottomSheet(navigationController, myViewModel)
+            if (currentRoute == "map_screen") {
+                Map(navigationController, myViewModel)
+                BottomSheet(navigationController, myViewModel)
+            }
+            else if (currentRoute == "locations_screen") {
+                Locations(navigationController, myViewModel)
+            }
         }
     }
 }
@@ -152,6 +170,7 @@ fun MyTopAppBar(state: DrawerState) {
         navigationIcon = {
             IconButton(onClick = {
                 scope.launch {
+                    println("sjkdifgsdhgfsuh")
                     state.open()
                 }
             }) {
@@ -170,6 +189,29 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
     val name by myViewModel.nameMaker.observeAsState("")
     val press by myViewModel.press.observeAsState()
     val photoMarker by myViewModel.photoMarker.observeAsState()
+    val context = LocalContext.current
+    val isCameraPermissionGranted by myViewModel.cameraPermissionGranted.observeAsState(false)
+    val shouldShowPermissionRationale by myViewModel.shouldShowPermissionRationale.observeAsState(false)
+    val showPermissionDenied by myViewModel.showPermissionDenied.observeAsState(false)
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = {isGranted ->
+            if (isGranted) {
+                myViewModel.setCameraPermissionGranted(true)
+            }
+            else {
+                myViewModel.setShouldShowPermissionRationale(
+                    shouldShowRequestPermissionRationale(
+                        context as Activity,
+                        Manifest.permission.CAMERA
+                    )
+                )
+                if (!shouldShowPermissionRationale) {
+                    Log.i("CameraScreen", "No podemos volver a pedir permisos")
+                    myViewModel.setShowPermissionDenied(true)
+                }
+            }
+        })
     if (show!!) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -203,10 +245,18 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
             }
             else {
                 IconButton(onClick = {
-                    navigationController.navigate(Routes.CameraScreen.route) },
+                    if (!isCameraPermissionGranted) {
+                        launcher.launch(Manifest.permission.CAMERA)
+                    }
+                    else {
+                        navigationController.navigate(Routes.CameraScreen.route)
+                    }},
                     modifier = Modifier.align(Alignment.CenterHorizontally)) {
                     Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Back",
                         modifier = Modifier.fillMaxSize())
+                }
+                if (showPermissionDenied) {
+                    PermissionDeclinedScreen()
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -294,6 +344,30 @@ fun iconoSelect(iterador:Int):String {
         5 -> return "supermercado"
         else -> return ""
     }
+}
+
+@Composable
+fun PermissionDeclinedScreen() {
+    val context = LocalContext.current
+    Column (horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize()) {
+        Text(text = "Permission required", fontWeight = FontWeight.Bold)
+        Text(text = "This app needs acces to the camera to take photos")
+        Button(onClick = {
+            openAppSettings(context as Activity)
+        }) {
+            Text(text = "Accept")
+        }
+    }
+}
+
+fun openAppSettings(activity: Activity) {
+    val intent = Intent().apply {
+        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+        data = Uri.fromParts("package", activity.packageName, null)
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+    activity.startActivity(intent)
 }
 
 

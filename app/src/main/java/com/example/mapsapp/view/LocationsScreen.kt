@@ -1,5 +1,7 @@
 package com.example.mapsapp.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -17,8 +19,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DrawerState
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -31,13 +36,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.mapsapp.MyDrawer
 import com.example.mapsapp.model.Marca
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.sky
 import com.example.mapsapp.viewModel.MyViewModel
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun LocationsScreen(navigationController: NavController, myViewModel: MyViewModel) {
+    MyDrawer(myViewModel, navigationController)
+}
+
+@Composable
+fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
     val markers by myViewModel.markers.observeAsState()
     LazyColumn (modifier = Modifier
         .fillMaxWidth()
