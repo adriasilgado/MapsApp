@@ -6,11 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -26,7 +24,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.Font
@@ -41,19 +38,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.ui.theme.MapsAppTheme
-import com.example.mapsapp.view.BottomSheet
 import com.example.mapsapp.view.CameraScreen
 import com.example.mapsapp.view.DetailScreen
+import com.example.mapsapp.view.GalleryScreen
 import com.example.mapsapp.view.MyScaffold
 import com.example.mapsapp.view.LocationsScreen
 import com.example.mapsapp.view.MapScreen
-import com.example.mapsapp.view.MyScaffold
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.launch
 
 val sky = FontFamily(Font(R.font.bloom))
@@ -86,7 +80,9 @@ class MainActivity : ComponentActivity() {
                             DetailScreen(
                                 backStackEntry.arguments?.getString("name").orEmpty(),
                                 navigationController, myViewModel
-                            )}}
+                            )}
+                        composable(Routes.GalleryScreen.route) { GalleryScreen(navigationController, myViewModel) }
+                    }
                 }
             }
         }
@@ -131,6 +127,7 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
                     scope.launch {
                         state.close()
                     }
+                    myViewModel.changeisCurrentLocation()
                     myViewModel.changeBottomSheetState()
                 })
         }

@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Cameraswitch
+import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -39,6 +40,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -59,6 +63,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 @Composable
 fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) {
     val context = LocalContext.current
+    val isAddImage by myViewModel.isAddImage.observeAsState()
     val controller = remember {
         LifecycleCameraController(context).apply {
             CameraController.IMAGE_CAPTURE
@@ -91,6 +96,9 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
         ) {
             Icon(imageVector = Icons.Default.Cameraswitch, contentDescription = "Switch camera")
         }
+        IconButton(onClick = {navigationController.navigate(Routes.GalleryScreen.route)}) {
+            Icon(imageVector = Icons.Default.Photo, contentDescription = "Gallery")
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -103,6 +111,10 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                 onClick = {
                     takePhoto(context, controller) { photo ->
                         myViewModel.changePhotoMarker(photo)
+                        if (isAddImage == true) {
+                            myViewModel.editImageMarker(myViewModel.posMarker.value!!)
+                            myViewModel.changeisAddImage()
+                        }
                         navigationController.navigateUp()
                     }
                 },

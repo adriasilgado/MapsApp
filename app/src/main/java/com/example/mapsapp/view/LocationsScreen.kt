@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mapsapp.MyDrawer
+import com.example.mapsapp.R
 import com.example.mapsapp.model.Marca
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.sky
@@ -71,12 +72,28 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
             .padding(16.dp)
             .fillMaxWidth()
             .clickable { navigationController.navigate(Routes.DetailScreen.createRoute(marca.name)) }) {
-            Image(
-                bitmap = marca.photo!!.asImageBitmap(),
-                contentDescription = "Character Image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(100.dp)
-            )
+            if (marca.photo != null) {
+                Image(
+                    bitmap = marca.photo.asImageBitmap(),
+                    contentDescription = "Character Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(100.dp)
+                )
+            }
+            else {
+                Image(
+                    painter = painterResource(id = R.drawable.addimage),
+                    contentDescription = "Add Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(100.dp).clickable {
+                        myViewModel.changeNameMarker(marca.name)
+                        myViewModel.changeTypeMarker(marca.tipo)
+                        myViewModel.changePosMarker(marca.pos)
+                        myViewModel.changeisAddImage()
+                        navigationController.navigate(Routes.CameraScreen.route)
+                    }
+                )
+            }
             Column {
                 Text(
                     text = marca.name,

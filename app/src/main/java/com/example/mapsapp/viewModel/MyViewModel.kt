@@ -1,13 +1,11 @@
 package com.example.mapsapp.viewModel
 
 import android.graphics.Bitmap
-import androidx.compose.material3.DrawerState
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
 import com.example.mapsapp.model.Marca
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 
 class MyViewModel: ViewModel() {
     private val _markers = MutableLiveData<List<Marca>>(emptyList())
@@ -30,12 +28,29 @@ class MyViewModel: ViewModel() {
     val shouldShowPermissionRationale = _shouldShowPermissionRationale
     private val _showPermissionDenied = MutableLiveData(false)
     val showPermissionDenied = _showPermissionDenied
+    private val _currentLocation = MutableLiveData<LatLng>()
+    val currentLocation = _currentLocation
+    private val _isCurrentLocation = MutableLiveData(false)
+    val isCurrentLocation = _isCurrentLocation
+    private val _isAddImage = MutableLiveData(false)
+    val isAddImage = _isAddImage
     val listaIconos = listOf(R.drawable.aviongrande, R.drawable.gasolineragrande, R.drawable.hospitalgrande, R.drawable.hotelgrande, R.drawable.restgrande, R.drawable.supergrande)
     val listaMarcadores = listOf(R.drawable.airport, R.drawable.fillingstation, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
 
     fun addMarker(){
         val currentList = _markers.value.orEmpty().toMutableList()
         currentList.add(Marca(_posMarker.value!!, _nameMarker.value!!, _typeMarker.value!!, _photoMaker.value))
+        _markers.value = currentList
+    }
+
+    fun editImageMarker(posMarker:LatLng){
+        val currentList = _markers.value.orEmpty().toMutableList()
+        val index = currentList.indexOf(currentList.find { it.pos == posMarker })
+        currentList[index] = Marca(posMarker, _nameMarker.value!!, _typeMarker.value!!, _photoMaker.value)
+        _posMarker.value = null
+        _nameMarker.value = ""
+        _photoMaker.value = null
+        _typeMarker.value = "avion"
         _markers.value = currentList
     }
 
@@ -97,5 +112,17 @@ class MyViewModel: ViewModel() {
 
     fun setShowPermissionDenied(denied:Boolean) {
         _showPermissionDenied.value = denied
+    }
+
+    fun changeCurrentLocation(location:LatLng) {
+        _currentLocation.value = location
+    }
+
+    fun changeisCurrentLocation(){
+        _isCurrentLocation.value = !_isCurrentLocation.value!!
+    }
+
+    fun changeisAddImage(){
+        _isAddImage.value = !_isAddImage.value!!
     }
 }
