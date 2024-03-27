@@ -93,7 +93,7 @@ fun MapScreen(navigationController: NavController, myViewModel: MyViewModel) {
 fun MyScaffold(state: DrawerState, navigationController: NavController, myViewModel: MyViewModel) {
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    Scaffold(topBar = { MyTopAppBar(state) }) { paddingValues ->
+    Scaffold(topBar = { MyTopAppBar(state, navigationController, myViewModel) }) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -154,20 +154,22 @@ fun Map(navigationController: NavController, myViewModel: MyViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar(state: DrawerState) {
+fun MyTopAppBar(state: DrawerState, navigationController: NavController, myViewModel: MyViewModel) {
     val scope = rememberCoroutineScope()
+    val navBackStackEntry by navigationController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     TopAppBar(
         title = {},
         navigationIcon = {
             IconButton(onClick = {
                 scope.launch {
-                    println("sjkdifgsdhgfsuh")
                     state.open()
                 }
             }) {
                 Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menu")
             }
-        }
+        },
+        actions = { if (currentRoute == "locations_screen") MyDropDownMenu(myViewModel)}
     )
 }
 
@@ -309,7 +311,7 @@ fun EleccionTipo(myViewModel: MyViewModel) {
     Row (modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp)){
-        for (i in 0 until myViewModel.listaIconos.size) {
+        for (i in 0 until myViewModel.listaIconos.value!!.size) {
             Box (modifier = Modifier
                 .aspectRatio(1f)
                 .weight(1f))
@@ -323,7 +325,7 @@ fun EleccionTipo(myViewModel: MyViewModel) {
                         ),
                         shape = CircleShape
                     ), onClick = { myViewModel.changeTypeMarker(iconoSelect(i))}) {
-                    Image(painter = painterResource(id = myViewModel.listaIconos[i]), contentDescription = "icon")
+                    Image(painter = painterResource(id = myViewModel.listaIconos.value!![i]), contentDescription = "icon")
                 }
             }
         }

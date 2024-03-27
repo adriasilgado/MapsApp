@@ -34,7 +34,8 @@ class MyViewModel: ViewModel() {
     val isCurrentLocation = _isCurrentLocation
     private val _isAddImage = MutableLiveData(false)
     val isAddImage = _isAddImage
-    val listaIconos = listOf(R.drawable.aviongrande, R.drawable.gasolineragrande, R.drawable.hospitalgrande, R.drawable.hotelgrande, R.drawable.restgrande, R.drawable.supergrande)
+    private val _listaIconos = MutableLiveData(listOf(R.drawable.aviongrande, R.drawable.gasolineragrande, R.drawable.hospitalgrande, R.drawable.hotelgrande, R.drawable.restgrande, R.drawable.supergrande))
+    val listaIconos = _listaIconos
     val listaMarcadores = listOf(R.drawable.airport, R.drawable.fillingstation, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
 
     fun addMarker(){
@@ -88,12 +89,12 @@ class MyViewModel: ViewModel() {
 
     fun whatIconBig(tipo:String):Int {
         return when(tipo){
-            "avion" -> listaIconos[0]
-            "gasolinera" -> listaIconos[1]
-            "hospital" -> listaIconos[2]
-            "hotel" -> listaIconos[3]
-            "restaurante" -> listaIconos[4]
-            "supermercado" -> listaIconos[5]
+            "avion" -> listaIconos.value!![0]
+            "gasolinera" -> listaIconos.value!![1]
+            "hospital" -> listaIconos.value!![2]
+            "hotel" -> listaIconos.value!![3]
+            "restaurante" -> listaIconos.value!![4]
+            "supermercado" -> listaIconos.value!![5]
             else -> 0
         }
     }
