@@ -36,6 +36,8 @@ class MyViewModel: ViewModel() {
     val isAddImage = _isAddImage
     private val _listaIconos = MutableLiveData(listOf(R.drawable.aviongrande, R.drawable.gasolineragrande, R.drawable.hospitalgrande, R.drawable.hotelgrande, R.drawable.restgrande, R.drawable.supergrande))
     val listaIconos = _listaIconos
+    private val _markersList = MutableLiveData<List<Marca>>(emptyList())
+    val markersList = _markersList
     val listaMarcadores = listOf(R.drawable.airport, R.drawable.fillingstation, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
 
     fun addMarker(){
@@ -125,5 +127,24 @@ class MyViewModel: ViewModel() {
 
     fun changeisAddImage(){
         _isAddImage.value = !_isAddImage.value!!
+    }
+
+    fun optionChoosed(option:String) {
+        println(_markersList.value)
+        var type : String = ""
+        when (option) {
+            "aviongrande" -> type = "avion"
+            "gasolineragrande" -> type = "gasolinera"
+            "hospitalgrande" -> type = "hospital"
+            "hotelgrande" -> type = "hotel"
+            "restgrande" -> type = "restaurante"
+            "supergrande" -> type = "supermercado"
+        }
+        if (type != "") filterMarkers(type)
+        else _markersList.value = _markers.value
+    }
+
+    fun filterMarkers(type:String){
+        _markersList.value = _markers.value!!.filter { it.tipo == type }
     }
 }

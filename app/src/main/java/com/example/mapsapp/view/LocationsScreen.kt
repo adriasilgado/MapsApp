@@ -1,5 +1,7 @@
 package com.example.mapsapp.view
 
+import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -45,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -66,7 +69,7 @@ fun LocationsScreen(navigationController: NavController, myViewModel: MyViewMode
 
 @Composable
 fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
-    val markers by myViewModel.markers.observeAsState()
+    val markers by myViewModel.markersList.observeAsState()
     LazyColumn (modifier = Modifier
         .fillMaxWidth()
         .padding(10.dp)){
@@ -134,7 +137,7 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
 
 @Composable
 fun MyDropDownMenu(myViewModel: MyViewModel): Int {
-    var selectedImage by remember { mutableStateOf(R.drawable.aviongrande) }
+    var selectedImage by remember { mutableStateOf(R.drawable.addimage) }
     var expanded by remember { mutableStateOf(false) }
     val images by myViewModel.listaIconos.observeAsState()
 
@@ -188,8 +191,20 @@ fun MyDropDownMenu(myViewModel: MyViewModel): Int {
             }
         }
     }
+    val context = LocalContext.current
+    val resourceName = getResourceNameFromContext(context, selectedImage)
+    myViewModel.optionChoosed(resourceName!!)
     return selectedImage
 }
+
+fun getResourceNameFromContext(context: Context, resourceId: Int): String? {
+    return try {
+        context.resources.getResourceName(resourceId)?.split("/")?.lastOrNull()
+    } catch (e: Resources.NotFoundException) {
+        null
+    }
+}
+
 
 
 
