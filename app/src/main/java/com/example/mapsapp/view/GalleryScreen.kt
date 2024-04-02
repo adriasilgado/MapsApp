@@ -11,6 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,11 +19,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,7 +52,8 @@ import com.example.mapsapp.viewModel.MyViewModel
 fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel) {
     val context = LocalContext.current
     val img: Bitmap? = ContextCompat.getDrawable(context, R.drawable.addimage)?.toBitmap()
-    var bitmap by remember { mutableStateOf(img) }
+    var bitmap:Bitmap? by remember { mutableStateOf(null) }
+    val isAddImage by myViewModel.isAddImage.observeAsState()
     val launchImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
@@ -60,39 +67,54 @@ fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel)
                 }
             }
         })
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Button(onClick = {
-            launchImage.launch("image/*")
-        },
-            modifier = Modifier
-                .fillMaxHeight(0.05f)
-                .width(150.dp),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(Color.DarkGray)) {
-            Text("Open Gallery", fontFamily = sky)
+    Box(modifier = Modifier.fillMaxSize()) {
+        IconButton(
+            onClick = { navigationController.navigateUp() },
+            modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back")
         }
-        Image(
-            bitmap = if (bitmap != null) bitmap!!.asImageBitmap() else img!!.asImageBitmap(), contentDescription = null,
-            contentScale = ContentScale.Crop, modifier = Modifier.clip(CircleShape)
-                .size(250.dp)
-                .background(Color.Transparent)
-                .border(width = 1.dp, color = Color.White, shape = CircleShape)
-        )
-        Button(onClick = {
-            myViewModel.changePhotoMarker(bitmap!!)
-            navigationController.navigate(Routes.MapScreen.route)
-        },
-            modifier = Modifier
-                .fillMaxHeight(0.1f)
-                .width(150.dp),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(Color.DarkGray),
-            enabled = bitmap != null) {
-            Text("Save", fontFamily = sky)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Button(onClick = {
+                launchImage.launch("image/*")
+            },
+                modifier = Modifier
+                    .fillMaxHeight(0.05f)
+                    .width(150.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(Color.DarkGray)) {
+                Text("Open Gallery", fontFamily = sky)
+            }
+            Image(
+                bitmap = if (bitmap != null) bitmap!!.asImageBitmap() else img!!.asImageBitmap(), contentDescription = null,
+                contentScale = ContentScale.Crop, modifier = Modifier
+                    .clip(CircleShape)
+                    .size(250.dp)
+                    .background(Color.Transparent)
+                    .border(width = 1.dp, color = Color.White, shape = CircleShape)
+            )
+            Button(onClick = {
+                myViewModel.changePhotoMarker(bitmap!!)
+                if (isAddImage == true) {
+                    myViewModel.editImageMarker(myViewModel.posMarker.value!!)
+                    myViewModel.changeisAddImage()
+                    navigationController.navigate(Routes.LocationsScreen.route)
+                }
+                navigationController.navigate(Routes.MapScreen.route)
+            },
+                modifier = Modifier
+                    .fillMaxHeight(0.1f)
+                    .width(150.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(Color.DarkGray),
+                enabled = bitmap != null) {
+                Text("Save", fontFamily = sky)
+            }
         }
     }
+
 }

@@ -137,7 +137,7 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
 
 @Composable
 fun MyDropDownMenu(myViewModel: MyViewModel): Int {
-    var selectedImage by remember { mutableStateOf(R.drawable.addimage) }
+    var selectedImage by remember { mutableStateOf(R.drawable.all) }
     var expanded by remember { mutableStateOf(false) }
     val images by myViewModel.listaIconos.observeAsState()
 

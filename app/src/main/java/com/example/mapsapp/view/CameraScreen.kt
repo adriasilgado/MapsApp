@@ -16,6 +16,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -80,25 +81,6 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
         ) {
             Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back")
         }
-        IconButton(
-            onClick = {
-                controller.cameraSelector =
-                    if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
-                        CameraSelector.DEFAULT_FRONT_CAMERA
-                    } else {
-                        CameraSelector.DEFAULT_BACK_CAMERA
-                    }
-            },
-            modifier = Modifier
-                .offset(16.dp, 16.dp)
-                .align(Alignment.TopEnd)
-                .padding(end = 16.dp)
-        ) {
-            Icon(imageVector = Icons.Default.Cameraswitch, contentDescription = "Switch camera")
-        }
-        IconButton(onClick = {navigationController.navigate(Routes.GalleryScreen.route)}) {
-            Icon(imageVector = Icons.Default.Photo, contentDescription = "Gallery")
-        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -107,28 +89,51 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
             verticalArrangement = Arrangement.Bottom
         ) {
             Spacer(modifier = Modifier.weight(1f))
-            Button(
-                onClick = {
-                    takePhoto(context, controller) { photo ->
-                        myViewModel.changePhotoMarker(photo)
-                        if (isAddImage == true) {
-                            myViewModel.editImageMarker(myViewModel.posMarker.value!!)
-                            myViewModel.changeisAddImage()
+            Row (modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                IconButton(
+                    onClick = {
+                        controller.cameraSelector =
+                            if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                                CameraSelector.DEFAULT_FRONT_CAMERA
+                            } else {
+                                CameraSelector.DEFAULT_BACK_CAMERA
+                            }
+                    },
+                    modifier = Modifier
+                        .offset(16.dp, 16.dp)
+                        .padding(end = 16.dp)
+                ) {
+                    Icon(imageVector = Icons.Default.Cameraswitch, contentDescription = "Switch camera")
+                }
+                Button(
+                    onClick = {
+                        takePhoto(context, controller) { photo ->
+                            myViewModel.changePhotoMarker(photo)
+                            if (isAddImage == true) {
+                                myViewModel.editImageMarker(myViewModel.posMarker.value!!)
+                                myViewModel.changeisAddImage()
+                            }
+                            navigationController.navigateUp()
                         }
-                        navigationController.navigateUp()
-                    }
-                },
-                modifier = Modifier
-                    .height(64.dp)
-                    .width(64.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .border(7.dp, Color(230, 222, 221), shape = CircleShape),
-                shape = CircleShape,
-                colors = ButtonDefaults.buttonColors(
-                    Color.White
-                )
-            ) {
+                    },
+                    modifier = Modifier
+                        .height(64.dp)
+                        .width(64.dp)
+                        .border(7.dp, Color(230, 222, 221), shape = CircleShape),
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(
+                        Color.White
+                    )
+                ) {
 
+                }
+                IconButton(onClick = {navigationController.navigate(Routes.GalleryScreen.route)},
+                    modifier = Modifier
+                        .offset(16.dp, 16.dp)
+                        .padding(end = 16.dp)) {
+                    Icon(imageVector = Icons.Default.Photo, contentDescription = "Gallery")
+                }
             }
         }
     }

@@ -311,7 +311,7 @@ fun EleccionTipo(myViewModel: MyViewModel) {
     Row (modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp)){
-        for (i in 0 until myViewModel.listaIconos.value!!.size) {
+        for (i in 1 until myViewModel.listaIconos.value!!.size) {
             Box (modifier = Modifier
                 .aspectRatio(1f)
                 .weight(1f))
@@ -334,12 +334,12 @@ fun EleccionTipo(myViewModel: MyViewModel) {
 
 fun iconoSelect(iterador:Int):String {
     when (iterador) {
-        0 -> return "avion"
-        1 -> return "gasolinera"
-        2 -> return "hospital"
-        3 -> return "hotel"
-        4 -> return "restaurante"
-        5 -> return "supermercado"
+        1 -> return "avion"
+        2 -> return "gasolinera"
+        3 -> return "hospital"
+        4 -> return "hotel"
+        5 -> return "restaurante"
+        6 -> return "supermercado"
         else -> return ""
     }
 }
