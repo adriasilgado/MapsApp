@@ -5,9 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
 import com.example.mapsapp.model.Marca
+import com.example.mapsapp.model.Repository
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.DocumentChange
 
 class MyViewModel: ViewModel() {
+    private val repository = Repository()
     private val _markers = MutableLiveData<List<Marca>>(emptyList())
     val markers = _markers
     private val _showBottomSheet = MutableLiveData<Boolean>(false)
@@ -42,14 +45,14 @@ class MyViewModel: ViewModel() {
 
     fun addMarker(){
         val currentList = _markers.value.orEmpty().toMutableList()
-        currentList.add(Marca(_posMarker.value!!, _nameMarker.value!!, _typeMarker.value!!, _photoMaker.value))
+        currentList.add(Marca(_posMarker.value!!.latitude, _posMarker.value!!.longitude, _nameMarker.value!!, _typeMarker.value!!, _photoMaker.value))
         _markers.value = currentList
     }
 
     fun editImageMarker(posMarker:LatLng){
         val currentList = _markers.value.orEmpty().toMutableList()
-        val index = currentList.indexOf(currentList.find { it.pos == posMarker })
-        currentList[index] = Marca(posMarker, _nameMarker.value!!, _typeMarker.value!!, _photoMaker.value)
+        val index = currentList.indexOf(currentList.find { it.lat == posMarker.latitude && it.lon == posMarker.longitude })
+        currentList[index] = Marca(posMarker.latitude, posMarker.longitude, _nameMarker.value!!, _typeMarker.value!!, _photoMaker.value)
         _posMarker.value = null
         _nameMarker.value = ""
         _photoMaker.value = null
@@ -146,5 +149,42 @@ class MyViewModel: ViewModel() {
 
     fun filterMarkers(type:String){
         _markersList.value = _markers.value!!.filter { it.tipo == type }
+    }
+
+    fun getMarkers() {
+        repository.getMarkers().addSnapshotListener { value, error ->
+            if (error != null) {
+                return@addSnapshotListener
+            }
+            val list = mutableListOf<Marca>()
+            for (dc: DocumentChange in value?.documentChanges!!) {
+                if (dc.type == DocumentChange.Type.ADDED) {
+                    val newMarker = dc.document.toObject(Marca::class.java)
+                    newMarker.markerId = dc.document.id
+                    list.add(newMarker)
+                }
+            }
+            _markers.value = list
+        }
+    }
+
+    fun getMarker(markerId:String) {
+        repository.getMarker(markerId).addSnapshotListener { value, error ->
+            if (error != null) {
+                return@addSnapshotListener
+            }
+            if (value != null && value.exists()) {
+                val marker = value.toObject(Marca::class.java)
+                if (marker != null) {
+                    marker.markerId = markerId
+                }
+                _posMarker.value = LatLng(marker!!.lat, marker.lon)
+                _nameMarker.value = marker.name
+                _typeMarker.value = marker.tipo
+            }
+            else {
+                println("null")
+            }
+        }
     }
 }

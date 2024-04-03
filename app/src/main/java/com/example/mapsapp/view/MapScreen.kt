@@ -142,8 +142,9 @@ fun Map(navigationController: NavController, myViewModel: MyViewModel) {
         }
     ) {
         markers!!.forEach { marker ->
+            val pos:LatLng = LatLng(marker.lat, marker.lon)
             Marker(
-                state = MarkerState(position = marker.pos),
+                state = MarkerState(position = pos),
                 title = marker.name,
                 icon = BitmapDescriptorFactory.fromResource(myViewModel.whatIcon(marker.tipo))
             )

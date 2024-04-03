@@ -60,6 +60,7 @@ import com.example.mapsapp.model.Marca
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.sky
 import com.example.mapsapp.viewModel.MyViewModel
+import com.google.android.gms.maps.model.LatLng
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
@@ -106,7 +107,8 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
                     modifier = Modifier.size(100.dp).clickable {
                         myViewModel.changeNameMarker(marca.name)
                         myViewModel.changeTypeMarker(marca.tipo)
-                        myViewModel.changePosMarker(marca.pos)
+                        val pos:LatLng = LatLng(marca.lat, marca.lon)
+                        myViewModel.changePosMarker(pos)
                         myViewModel.changeisAddImage()
                         navigationController.navigate(Routes.CameraScreen.route)
                     }
