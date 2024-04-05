@@ -64,8 +64,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.MainActivity
 import com.example.mapsapp.MyDrawer
+import com.example.mapsapp.R
+import com.example.mapsapp.model.Marca
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.sky
 import com.example.mapsapp.viewModel.MyViewModel
@@ -115,6 +119,7 @@ fun MyScaffold(state: DrawerState, navigationController: NavController, myViewMo
 @Composable
 fun Map(navigationController: NavController, myViewModel: MyViewModel) {
     val markers by myViewModel.markers.observeAsState()
+    myViewModel.getMarkers()
     val context = LocalContext.current
     val fusedLocationProveidorClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     var lastKnownLocation by remember { mutableStateOf<Location?>(null) }
@@ -141,13 +146,17 @@ fun Map(navigationController: NavController, myViewModel: MyViewModel) {
             myViewModel.changeBottomSheetState()
         }
     ) {
-        markers!!.forEach { marker ->
-            val pos:LatLng = LatLng(marker.lat, marker.lon)
-            Marker(
-                state = MarkerState(position = pos),
-                title = marker.name,
-                icon = BitmapDescriptorFactory.fromResource(myViewModel.whatIcon(marker.tipo))
-            )
+        if (markers != null) {
+            markers!!.forEach { marker ->
+                Log.i("IMAGEN MARKER", "Icono: ${marker.tipo}")
+                val pos:LatLng = LatLng(marker.lat, marker.lon)
+                Marker(
+                    state = MarkerState(position = pos),
+                    title = marker.name,
+                    //icon = BitmapDescriptorFactory.fromResource(R.drawable.airport)
+                    icon = BitmapDescriptorFactory.fromResource(myViewModel.whatIcon(marker.tipo))
+                )
+            }
         }
     }
 }
@@ -174,7 +183,9 @@ fun MyTopAppBar(state: DrawerState, navigationController: NavController, myViewM
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
+    ExperimentalGlideComposeApi::class
+)
 @Composable
 fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
     val sheetState = rememberModalBottomSheetState(true)
@@ -235,12 +246,19 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
             Spacer(modifier = Modifier.height(20.dp))
             EleccionTipo(myViewModel)
             Spacer(modifier = Modifier.height(20.dp))
+
             if (photoMarker != null) {
-                Image(photoMarker!!.asImageBitmap(), contentDescription = "photo",
+                /*
+                GlideImage(
+                    model = photoMarker!!,
+                    contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
-                        .padding(horizontal = 16.dp))
+                        .padding(horizontal = 16.dp)
+                )
+
+                 */
             }
             else {
                 IconButton(onClick = {
@@ -264,7 +282,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 .padding(horizontal = 5.dp, vertical = 5.dp)){
                 Button(onClick = {
                     myViewModel.changeNameMarker("")
-                    myViewModel.changePhotoMarker(null)
+                    myViewModel.changePhotoMarker("")
                     myViewModel.changeTypeMarker("avion")
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
@@ -281,10 +299,19 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 }
                 Spacer(modifier = Modifier.width(25.dp))
                 Button(onClick = {
-                    myViewModel.addMarker()
+                    myViewModel.addMarker(
+                        Marca(
+                            null,
+                            myViewModel.posMarker.value!!.latitude,
+                            myViewModel.posMarker.value!!.longitude,
+                            myViewModel.nameMaker.value!!,
+                            myViewModel.typeMarker.value!!,
+                            myViewModel.photoMarker.value
+                        )
+                    )
                     myViewModel.changeNameMarker("")
                     myViewModel.changeTypeMarker("avion")
-                    myViewModel.changePhotoMarker(null)
+                    myViewModel.changePhotoMarker("")
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             myViewModel.changeBottomSheetState()

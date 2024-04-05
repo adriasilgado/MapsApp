@@ -9,7 +9,7 @@ data class Marca (
     val lon:Double,
     val name:String,
     val tipo:String,
-    val photo: Bitmap?
+    val photo: String?
 ) {
-    constructor():this("", 0.0, 0.0, "", "", null)
+    constructor():this("", 0.0, 0.0, "", "", "")
 }

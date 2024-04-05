@@ -1,6 +1,8 @@
 package com.example.mapsapp.viewModel
 
 import android.graphics.Bitmap
+import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
@@ -8,6 +10,10 @@ import com.example.mapsapp.model.Marca
 import com.example.mapsapp.model.Repository
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.storage.FirebaseStorage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MyViewModel: ViewModel() {
     private val repository = Repository()
@@ -19,7 +25,7 @@ class MyViewModel: ViewModel() {
     val nameMaker = _nameMarker
     private val _posMarker = MutableLiveData<LatLng>()
     val posMarker = _posMarker
-    private val _photoMaker = MutableLiveData<Bitmap?>()
+    private val _photoMaker = MutableLiveData<String>()
     val photoMarker = _photoMaker
     private val _press = MutableLiveData<Boolean>(false)
     val press = _press
@@ -43,12 +49,16 @@ class MyViewModel: ViewModel() {
     val markersList = _markersList
     val listaMarcadores = listOf(R.drawable.airport, R.drawable.fillingstation, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
 
+    /*
     fun addMarker(){
         val currentList = _markers.value.orEmpty().toMutableList()
         currentList.add(Marca(_posMarker.value!!.latitude, _posMarker.value!!.longitude, _nameMarker.value!!, _typeMarker.value!!, _photoMaker.value))
         _markers.value = currentList
     }
 
+     */
+
+    /*
     fun editImageMarker(posMarker:LatLng){
         val currentList = _markers.value.orEmpty().toMutableList()
         val index = currentList.indexOf(currentList.find { it.lat == posMarker.latitude && it.lon == posMarker.longitude })
@@ -59,6 +69,8 @@ class MyViewModel: ViewModel() {
         _typeMarker.value = "avion"
         _markers.value = currentList
     }
+
+     */
 
     fun changeBottomSheetState(){
         _showBottomSheet.value = !_showBottomSheet.value!!
@@ -88,7 +100,7 @@ class MyViewModel: ViewModel() {
             "hotel" -> listaMarcadores[3]
             "restaurante" -> listaMarcadores[4]
             "supermercado" -> listaMarcadores[5]
-            else -> 0
+            else -> listaMarcadores[0]
         }
     }
 
@@ -104,7 +116,8 @@ class MyViewModel: ViewModel() {
         }
     }
 
-    fun changePhotoMarker(photo:Bitmap?){
+
+    fun changePhotoMarker(photo:String){
         _photoMaker.value = photo
     }
 
@@ -151,6 +164,11 @@ class MyViewModel: ViewModel() {
         _markersList.value = _markers.value!!.filter { it.tipo == type }
     }
 
+    fun addMarker(marker: Marca) {
+        repository.addMarker(marker)
+        getMarkers()
+    }
+
     fun getMarkers() {
         repository.getMarkers().addSnapshotListener { value, error ->
             if (error != null) {
@@ -181,10 +199,29 @@ class MyViewModel: ViewModel() {
                 _posMarker.value = LatLng(marker!!.lat, marker.lon)
                 _nameMarker.value = marker.name
                 _typeMarker.value = marker.tipo
+                _photoMaker.value = marker.photo
             }
             else {
                 println("null")
             }
         }
+    }
+
+    fun uploadImage(imageUri: Uri) {
+        val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault())
+        val now = Date()
+        val fileName = formatter.format(now)
+        val storage = FirebaseStorage.getInstance().getReference("images/$fileName")
+        storage.putFile(imageUri)
+            .addOnSuccessListener {
+                Log.i("IMAGE UPLOAD", "Image uploaded successfully")
+                storage.downloadUrl.addOnSuccessListener {
+                    _photoMaker.value = it.toString()
+                    Log.i("IMAGEN", it.toString())
+                }
+            }
+            .addOnFailureListener {
+                Log.e("IMAGE UPLOAD", "Image upload failed")
+            }
     }
 }

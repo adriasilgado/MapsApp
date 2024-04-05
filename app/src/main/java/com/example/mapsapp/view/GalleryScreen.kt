@@ -3,6 +3,7 @@ package com.example.mapsapp.view
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -54,6 +55,7 @@ fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel)
     val img: Bitmap? = ContextCompat.getDrawable(context, R.drawable.addimage)?.toBitmap()
     var bitmap:Bitmap? by remember { mutableStateOf(null) }
     val isAddImage by myViewModel.isAddImage.observeAsState()
+    var uri: Uri? by remember { mutableStateOf(null) }
     val launchImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
@@ -66,6 +68,7 @@ fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel)
                 source?.let { it1 -> ImageDecoder.decodeBitmap(it1)
                 }
             }
+            uri = it
         })
     Box(modifier = Modifier.fillMaxSize()) {
         IconButton(
@@ -79,6 +82,16 @@ fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel)
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
+            Button(onClick = {
+
+            },
+                modifier = Modifier
+                    .fillMaxHeight(0.05f)
+                    .width(150.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(Color.DarkGray)) {
+                Text("Upload Storage", fontFamily = sky)
+            }
             Button(onClick = {
                 launchImage.launch("image/*")
             },
@@ -98,9 +111,11 @@ fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel)
                     .border(width = 1.dp, color = Color.White, shape = CircleShape)
             )
             Button(onClick = {
-                myViewModel.changePhotoMarker(bitmap!!)
+                println(uri)
+                if (uri != null) myViewModel.uploadImage(uri!!)
+                //myViewModel.changePhotoMarker(uri)
                 if (isAddImage == true) {
-                    myViewModel.editImageMarker(myViewModel.posMarker.value!!)
+                    //myViewModel.editImageMarker(myViewModel.posMarker.value!!)
                     myViewModel.changeisAddImage()
                     navigationController.navigate(Routes.LocationsScreen.route)
                 }

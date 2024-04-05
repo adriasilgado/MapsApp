@@ -109,9 +109,9 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                 Button(
                     onClick = {
                         takePhoto(context, controller) { photo ->
-                            myViewModel.changePhotoMarker(photo)
+                            //myViewModel.changePhotoMarker(photo)
                             if (isAddImage == true) {
-                                myViewModel.editImageMarker(myViewModel.posMarker.value!!)
+                                //myViewModel.editImageMarker(myViewModel.posMarker.value!!)
                                 myViewModel.changeisAddImage()
                             }
                             navigationController.navigateUp()

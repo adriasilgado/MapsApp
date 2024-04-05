@@ -75,6 +75,8 @@ dependencies {
     implementation("androidx.camera:camera-extensions:1.3.2")
     implementation("androidx.compose.material:material-icons-extended:1.6.3")
     implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation ("com.google.firebase:firebase-storage-ktx")
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

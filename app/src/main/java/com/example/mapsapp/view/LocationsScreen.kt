@@ -54,6 +54,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.MyDrawer
 import com.example.mapsapp.R
 import com.example.mapsapp.model.Marca
@@ -80,6 +82,7 @@ fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewModel: MyViewModel) {
     Card(
@@ -92,26 +95,39 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
             .fillMaxWidth()
             .clickable { navigationController.navigate(Routes.DetailScreen.createRoute(marca.name)) }) {
             if (marca.photo != null) {
+                /*
+                GlideImage(
+                    model = marca.photo,
+                    contentDescription = null,
+                )
+
+                 */
+
+                /*
                 Image(
                     bitmap = marca.photo.asImageBitmap(),
                     contentDescription = "Character Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(100.dp)
                 )
+
+                 */
             }
             else {
                 Image(
                     painter = painterResource(id = R.drawable.addimage),
                     contentDescription = "Add Image",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(100.dp).clickable {
-                        myViewModel.changeNameMarker(marca.name)
-                        myViewModel.changeTypeMarker(marca.tipo)
-                        val pos:LatLng = LatLng(marca.lat, marca.lon)
-                        myViewModel.changePosMarker(pos)
-                        myViewModel.changeisAddImage()
-                        navigationController.navigate(Routes.CameraScreen.route)
-                    }
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clickable {
+                            myViewModel.changeNameMarker(marca.name)
+                            myViewModel.changeTypeMarker(marca.tipo)
+                            val pos: LatLng = LatLng(marca.lat, marca.lon)
+                            myViewModel.changePosMarker(pos)
+                            myViewModel.changeisAddImage()
+                            navigationController.navigate(Routes.CameraScreen.route)
+                        }
                 )
             }
             Column {
@@ -164,7 +180,8 @@ fun MyDropDownMenu(myViewModel: MyViewModel): Int {
             Image(
                 painter = painterResource(id = selectedImage),
                 contentDescription = null,
-                modifier = Modifier.size(50.dp)
+                modifier = Modifier
+                    .size(50.dp)
                     .align(Alignment.Center)
             )
         }
@@ -172,7 +189,9 @@ fun MyDropDownMenu(myViewModel: MyViewModel): Int {
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.width(150.dp).background(color = Color.Black)
+            modifier = Modifier
+                .width(150.dp)
+                .background(color = Color.Black)
         ) {
             images!!.forEach { image ->
                 Box(
