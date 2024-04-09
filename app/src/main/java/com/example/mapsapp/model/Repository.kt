@@ -13,7 +13,7 @@ class Repository {
                 "lat" to marker.lat,
                 "lon" to marker.lon,
                 "name" to marker.name,
-                "type" to marker.tipo,
+                "tipo" to marker.tipo,
                 "photo" to marker.photo
             )
         )
@@ -25,7 +25,7 @@ class Repository {
                 "lat" to editMarker.lat,
                 "lon" to editMarker.lon,
                 "name" to editMarker.name,
-                "type" to editMarker.tipo,
+                "tipo" to editMarker.tipo,
                 "photo" to editMarker.photo
             )
         )

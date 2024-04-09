@@ -95,23 +95,12 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
             .fillMaxWidth()
             .clickable { navigationController.navigate(Routes.DetailScreen.createRoute(marca.name)) }) {
             if (marca.photo != null) {
-                /*
                 GlideImage(
                     model = marca.photo,
                     contentDescription = null,
+                    modifier = Modifier
+                        .size(125.dp)
                 )
-
-                 */
-
-                /*
-                Image(
-                    bitmap = marca.photo.asImageBitmap(),
-                    contentDescription = "Character Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(100.dp)
-                )
-
-                 */
             }
             else {
                 Image(
@@ -126,6 +115,7 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
                             val pos: LatLng = LatLng(marca.lat, marca.lon)
                             myViewModel.changePosMarker(pos)
                             myViewModel.changeisAddImage()
+                            myViewModel.changeMarkerId(marca.markerId!!)
                             navigationController.navigate(Routes.CameraScreen.route)
                         }
                 )

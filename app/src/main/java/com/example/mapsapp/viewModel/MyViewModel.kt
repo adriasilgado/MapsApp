@@ -48,6 +48,8 @@ class MyViewModel: ViewModel() {
     private val _markersList = MutableLiveData<List<Marca>>(emptyList())
     val markersList = _markersList
     val listaMarcadores = listOf(R.drawable.airport, R.drawable.fillingstation, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
+    private val _markerId = MutableLiveData<String>()
+    val markerId = _markerId
 
     /*
     fun addMarker(){
@@ -117,8 +119,11 @@ class MyViewModel: ViewModel() {
     }
 
 
-    fun changePhotoMarker(photo:String){
-        _photoMaker.value = photo
+    fun changePhotoMarker(photo:Uri?){
+        if (photo == null) _photoMaker.value = null
+        else {
+            _photoMaker.value = photo.toString()
+        }
     }
 
     fun setCameraPermissionGranted(granted:Boolean) {
@@ -166,6 +171,11 @@ class MyViewModel: ViewModel() {
 
     fun addMarker(marker: Marca) {
         repository.addMarker(marker)
+        getMarkers()
+    }
+
+    fun editMarker(marker: Marca) {
+        repository.editMarker(marker)
         getMarkers()
     }
 
@@ -223,5 +233,9 @@ class MyViewModel: ViewModel() {
             .addOnFailureListener {
                 Log.e("IMAGE UPLOAD", "Image upload failed")
             }
+    }
+
+    fun changeMarkerId(markerId:String) {
+        _markerId.value = markerId
     }
 }

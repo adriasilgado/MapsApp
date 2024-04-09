@@ -45,6 +45,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavController
 import com.example.mapsapp.R
+import com.example.mapsapp.model.Marca
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.sky
 import com.example.mapsapp.viewModel.MyViewModel
@@ -113,13 +114,20 @@ fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel)
             Button(onClick = {
                 println(uri)
                 if (uri != null) myViewModel.uploadImage(uri!!)
-                //myViewModel.changePhotoMarker(uri)
+                myViewModel.changePhotoMarker(uri)
                 if (isAddImage == true) {
-                    //myViewModel.editImageMarker(myViewModel.posMarker.value!!)
+                    myViewModel.editMarker(Marca(
+                        myViewModel.markerId.value!!,
+                        myViewModel.currentLocation.value!!.latitude,
+                        myViewModel.currentLocation.value!!.longitude,
+                        myViewModel.nameMaker.value!!,
+                        myViewModel.typeMarker.value!!,
+                        myViewModel.photoMarker.value!!,
+                        ))
                     myViewModel.changeisAddImage()
                     navigationController.navigate(Routes.LocationsScreen.route)
                 }
-                navigationController.navigate(Routes.MapScreen.route)
+                else navigationController.navigate(Routes.MapScreen.route)
             },
                 modifier = Modifier
                     .fillMaxHeight(0.1f)

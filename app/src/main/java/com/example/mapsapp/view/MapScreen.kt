@@ -153,7 +153,6 @@ fun Map(navigationController: NavController, myViewModel: MyViewModel) {
                 Marker(
                     state = MarkerState(position = pos),
                     title = marker.name,
-                    //icon = BitmapDescriptorFactory.fromResource(R.drawable.airport)
                     icon = BitmapDescriptorFactory.fromResource(myViewModel.whatIcon(marker.tipo))
                 )
             }
@@ -246,9 +245,9 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
             Spacer(modifier = Modifier.height(20.dp))
             EleccionTipo(myViewModel)
             Spacer(modifier = Modifier.height(20.dp))
-
+            println("imagen: $photoMarker")
             if (photoMarker != null) {
-                /*
+                println("no es null")
                 GlideImage(
                     model = photoMarker!!,
                     contentDescription = null,
@@ -257,10 +256,9 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                         .height(150.dp)
                         .padding(horizontal = 16.dp)
                 )
-
-                 */
             }
             else {
+                println("es null")
                 IconButton(onClick = {
                     if (!isCameraPermissionGranted) {
                         launcher.launch(Manifest.permission.CAMERA)
@@ -282,7 +280,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 .padding(horizontal = 5.dp, vertical = 5.dp)){
                 Button(onClick = {
                     myViewModel.changeNameMarker("")
-                    myViewModel.changePhotoMarker("")
+                    myViewModel.changePhotoMarker(null)
                     myViewModel.changeTypeMarker("avion")
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
@@ -311,7 +309,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                     )
                     myViewModel.changeNameMarker("")
                     myViewModel.changeTypeMarker("avion")
-                    myViewModel.changePhotoMarker("")
+                    myViewModel.changePhotoMarker(null)
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             myViewModel.changeBottomSheetState()
