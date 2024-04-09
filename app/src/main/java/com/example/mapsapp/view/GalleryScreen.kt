@@ -49,6 +49,7 @@ import com.example.mapsapp.model.Marca
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.sky
 import com.example.mapsapp.viewModel.MyViewModel
+import com.google.android.gms.maps.model.LatLng
 
 @Composable
 fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel) {
@@ -116,15 +117,22 @@ fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel)
                 if (uri != null) myViewModel.uploadImage(uri!!)
                 myViewModel.changePhotoMarker(uri)
                 if (isAddImage == true) {
+                    myViewModel.changeisAddImage()
                     myViewModel.editMarker(Marca(
                         myViewModel.markerId.value!!,
-                        myViewModel.currentLocation.value!!.latitude,
-                        myViewModel.currentLocation.value!!.longitude,
+                        myViewModel.posMarker.value!!.latitude,
+                        myViewModel.posMarker.value!!.longitude,
                         myViewModel.nameMaker.value!!,
                         myViewModel.typeMarker.value!!,
                         myViewModel.photoMarker.value!!,
                         ))
+                    myViewModel.changeNameMarker("")
+                    myViewModel.changeTypeMarker("")
+                    val pos: LatLng = LatLng(0.0, 0.0)
+                    myViewModel.changePosMarker(pos)
                     myViewModel.changeisAddImage()
+                    myViewModel.changeMarkerId("")
+                    myViewModel.changePhotoMarker(null)
                     navigationController.navigate(Routes.LocationsScreen.route)
                 }
                 else navigationController.navigate(Routes.MapScreen.route)
