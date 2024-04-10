@@ -9,6 +9,7 @@ import com.example.mapsapp.R
 import com.example.mapsapp.model.Marca
 import com.example.mapsapp.model.Repository
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.storage.FirebaseStorage
 import java.text.SimpleDateFormat
@@ -50,6 +51,15 @@ class MyViewModel: ViewModel() {
     val listaMarcadores = listOf(R.drawable.airport, R.drawable.fillingstation, R.drawable.hospital, R.drawable.hotel_0star, R.drawable.restaurant, R.drawable.supermarket)
     private val _markerId = MutableLiveData<String>()
     val markerId = _markerId
+    private val auth = FirebaseAuth.getInstance()
+    private val _goToNext = MutableLiveData<Boolean>()
+    val goToNext = _goToNext
+    private val _processing = MutableLiveData<Boolean>(true)
+    val processing = _processing
+    private val _userId = MutableLiveData<String>()
+    val userId = _userId
+    private val _loggedUser = MutableLiveData<String>()
+    val loggedUser = _loggedUser
 
     /*
     fun addMarker(){
@@ -237,5 +247,45 @@ class MyViewModel: ViewModel() {
 
     fun changeMarkerId(markerId:String) {
         _markerId.value = markerId
+    }
+
+    fun register(username:String, password:String) {
+        auth.createUserWithEmailAndPassword(username, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    _goToNext.value = true
+                }
+                else {
+                    _goToNext.value = false
+                    Log.d("Error", "Error creating user ${task.result}")
+                }
+                modifyProcessing()
+            }
+    }
+
+    fun modifyProcessing() {
+        _processing.value = !_processing.value!!
+    }
+
+    fun login (username:String?, password:String?) {
+        auth.signInWithEmailAndPassword(username!!, password!!)
+            .addOnCompleteListener{ task ->
+                if (task.isSuccessful) {
+                    _userId.value = task.result.user?.uid
+                    _loggedUser.value = task.result.user?.email?.split("@")?.get(0)
+                    _goToNext.value = true
+                }
+                else {
+                    _goToNext.value = false
+                    Log.d("Error", "Error creating user ${task.result}")
+                }
+                modifyProcessing()
+            }
+    }
+
+    fun logout() {
+        auth.signOut()
+        _userId.value = ""
+        _loggedUser.value = ""
     }
 }

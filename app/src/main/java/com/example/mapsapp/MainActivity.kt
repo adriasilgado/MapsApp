@@ -43,6 +43,7 @@ import com.example.mapsapp.view.DetailScreen
 import com.example.mapsapp.view.GalleryScreen
 import com.example.mapsapp.view.MyScaffold
 import com.example.mapsapp.view.LocationsScreen
+import com.example.mapsapp.view.LoginScreen
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -68,7 +69,7 @@ class MainActivity : ComponentActivity() {
                     val navigationController = rememberNavController()
                     NavHost(
                         navController = navigationController,
-                        startDestination = Routes.MapScreen.route) {
+                        startDestination = Routes.LoginScreen.route) {
                         composable(Routes.MapScreen.route) { MapScreen(navigationController, myViewModel) }
                         composable(Routes.CameraScreen.route) { CameraScreen(navigationController, myViewModel) }
                         composable(Routes.LocationsScreen.route) { LocationsScreen(navigationController, myViewModel) }
@@ -82,6 +83,7 @@ class MainActivity : ComponentActivity() {
                                 navigationController, myViewModel
                             )}
                         composable(Routes.GalleryScreen.route) { GalleryScreen(navigationController, myViewModel) }
+                        composable(Routes.LoginScreen.route) { LoginScreen(navigationController, myViewModel) }
                     }
                 }
             }

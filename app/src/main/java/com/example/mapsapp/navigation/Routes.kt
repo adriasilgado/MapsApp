@@ -8,4 +8,5 @@ sealed class Routes(val route:String) {
         fun createRoute(name: String) = "detail_screen/$name"
     }
     object GalleryScreen: Routes("gallery_screen")
+    object LoginScreen: Routes("login_screen")
 }

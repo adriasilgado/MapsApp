@@ -203,6 +203,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
         onResult = {isGranted ->
             if (isGranted) {
                 myViewModel.setCameraPermissionGranted(true)
+                navigationController.navigate(Routes.CameraScreen.route)
             }
             else {
                 myViewModel.setShouldShowPermissionRationale(
@@ -245,9 +246,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
             Spacer(modifier = Modifier.height(20.dp))
             EleccionTipo(myViewModel)
             Spacer(modifier = Modifier.height(20.dp))
-            println("imagen: $photoMarker")
             if (photoMarker != null) {
-                println("no es null")
                 GlideImage(
                     model = photoMarker!!,
                     contentDescription = null,
@@ -258,7 +257,6 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 )
             }
             else {
-                println("es null")
                 IconButton(onClick = {
                     if (!isCameraPermissionGranted) {
                         launcher.launch(Manifest.permission.CAMERA)
