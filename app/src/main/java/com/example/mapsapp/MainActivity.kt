@@ -45,6 +45,7 @@ import com.example.mapsapp.view.MyScaffold
 import com.example.mapsapp.view.LocationsScreen
 import com.example.mapsapp.view.LoginScreen
 import com.example.mapsapp.view.MapScreen
+import com.example.mapsapp.view.SignUpScreen
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -84,6 +85,7 @@ class MainActivity : ComponentActivity() {
                             )}
                         composable(Routes.GalleryScreen.route) { GalleryScreen(navigationController, myViewModel) }
                         composable(Routes.LoginScreen.route) { LoginScreen(navigationController, myViewModel) }
+                        composable(Routes.SignUpScreen.route) { SignUpScreen(navigationController, myViewModel) }
                     }
                 }
             }

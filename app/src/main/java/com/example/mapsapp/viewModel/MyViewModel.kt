@@ -10,6 +10,8 @@ import com.example.mapsapp.model.Marca
 import com.example.mapsapp.model.Repository
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.storage.FirebaseStorage
 import java.text.SimpleDateFormat
@@ -60,6 +62,12 @@ class MyViewModel: ViewModel() {
     val userId = _userId
     private val _loggedUser = MutableLiveData<String>()
     val loggedUser = _loggedUser
+    private val _showToast = MutableLiveData<Boolean>()
+    val showToast = _showToast
+    private val _incorrectPassword = MutableLiveData<Boolean>()
+    val incorrectPassword = _incorrectPassword
+    private val _notRegistered = MutableLiveData<Boolean>()
+    val notRegistered = _notRegistered
 
     /*
     fun addMarker(){
@@ -261,6 +269,10 @@ class MyViewModel: ViewModel() {
                 }
                 modifyProcessing()
             }
+            .addOnFailureListener {
+                Log.d("Error", "Ocurrió un error al iniciar sesión", it)
+                _showToast.value = true
+            }
     }
 
     fun modifyProcessing() {
@@ -277,9 +289,12 @@ class MyViewModel: ViewModel() {
                 }
                 else {
                     _goToNext.value = false
-                    Log.d("Error", "Error creating user ${task.result}")
                 }
                 modifyProcessing()
+            }
+            .addOnFailureListener {
+                Log.d("Error", "Ocurrió un error al iniciar sesión", it)
+                _showToast.value = true
             }
     }
 
@@ -287,5 +302,9 @@ class MyViewModel: ViewModel() {
         auth.signOut()
         _userId.value = ""
         _loggedUser.value = ""
+    }
+
+    fun changeShowToast() {
+        _showToast.value = false
     }
 }
