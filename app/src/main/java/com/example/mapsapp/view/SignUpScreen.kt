@@ -154,7 +154,8 @@ fun SignUpScreen(navigationController: NavController, myViewModel: MyViewModel) 
                 .padding(top = 20.dp),
             shape = RoundedCornerShape(25.dp),
             colors = ButtonDefaults.buttonColors(Color.DarkGray),
-            enabled = emptyEmail == false && emptyPassword == false){
+            enabled = !emptyEmail && !emptyPassword
+        ){
             Text("Register!", fontFamily = sky)
         }
         if (showToast == true) {
