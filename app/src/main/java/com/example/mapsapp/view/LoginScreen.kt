@@ -96,9 +96,7 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
             }
         }
         Button(
-            onClick = {
-                myViewModel.login(email, password)
-                      if (goToNext == true) navigationController.navigate(Routes.MapScreen.route) },
+            onClick = { myViewModel.login(email, password) },
             modifier = Modifier
                 .fillMaxHeight(0.1f)
                 .width(150.dp),
@@ -112,5 +110,6 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
             Toast.makeText(context, "Usuario/Contraseña incorrecto.", Toast.LENGTH_SHORT).show()
             myViewModel.changeShowToast()
         }
+        if (goToNext == true) navigationController.navigate(Routes.MapScreen.route)
     }
 }
