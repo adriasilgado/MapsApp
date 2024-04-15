@@ -130,15 +130,24 @@ fun SignUpScreen(navigationController: NavController, myViewModel: MyViewModel) 
         )
         Button(
             onClick = {
-                if (password == secondPassword) {
-                    myViewModel.register(email, password)
-                    if (showToast == false) {
-                        navigationController.navigate(Routes.LoginScreen.route)
-                    }
-                }
-                else if (false) {
-                    Toast.makeText(context, "Las contraseñas no son iguals.", Toast.LENGTH_SHORT).show()
-                }},
+                      if (password.length >= 6) {
+                          if (password == secondPassword) {
+                              myViewModel.register(email, password)
+                              if (showToast == false) {
+                                  navigationController.navigate(Routes.LoginScreen.route)
+                              }
+                              else {
+                                  Toast.makeText(context, "Email ya registrado", Toast.LENGTH_SHORT).show()
+                                  myViewModel.changeShowToast()
+                              }
+                          }
+                          else {
+                              Toast.makeText(context, "Las contraseñas no son iguales.", Toast.LENGTH_SHORT).show()
+                          }
+                      }
+                      else {
+                          Toast.makeText(context, "La contraseña debe tener al menos 6 caracteres.", Toast.LENGTH_SHORT).show()
+                      }},
             modifier = Modifier
                 .fillMaxHeight(0.15f)
                 .width(150.dp)

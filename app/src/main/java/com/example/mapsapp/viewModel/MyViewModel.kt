@@ -265,7 +265,6 @@ class MyViewModel: ViewModel() {
                 }
                 else {
                     _goToNext.value = false
-                    Log.d("Error", "Error creating user ${task.result}")
                 }
                 modifyProcessing()
             }
