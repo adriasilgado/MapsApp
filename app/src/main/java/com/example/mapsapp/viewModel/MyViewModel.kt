@@ -68,6 +68,8 @@ class MyViewModel: ViewModel() {
     val incorrectPassword = _incorrectPassword
     private val _notRegistered = MutableLiveData<Boolean>()
     val notRegistered = _notRegistered
+    private val _rememberMe = MutableLiveData<Boolean>()
+    val rememberMe = _rememberMe
 
     fun changeBottomSheetState(){
         _showBottomSheet.value = !_showBottomSheet.value!!
@@ -282,5 +284,10 @@ class MyViewModel: ViewModel() {
 
     fun changeShowToast() {
         _showToast.value = false
+    }
+
+    fun changeRememberMe() {
+        if (_rememberMe.value == null) _rememberMe.value = true
+        else _rememberMe.value = !_rememberMe.value!!
     }
 }
