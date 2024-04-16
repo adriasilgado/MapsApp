@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -41,11 +42,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -104,6 +107,8 @@ fun MyScaffold(state: DrawerState, navigationController: NavController, myViewMo
                 .padding(paddingValues)
         ) {
             if (currentRoute == "map_screen") {
+                var context = LocalContext.current
+                Toast.makeText(context, "Welcome, ${myViewModel.loggedUser.value}", Toast.LENGTH_SHORT).show()
                 Map(navigationController, myViewModel)
                 BottomSheet(navigationController, myViewModel)
             }
