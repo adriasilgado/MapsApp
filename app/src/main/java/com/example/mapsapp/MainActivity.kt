@@ -152,8 +152,9 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
             myViewModel.logout()
             scope.launch {
-                userPrefs.saveUserData("", "")
+                userPrefs.saveUserData("", "", "")
             }
+            myViewModel.setRememberMe(false)
             navigationController.navigate(Routes.LoginScreen.route)
         }) {
             IconButton(onClick = {}) {
@@ -172,13 +173,5 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
         else {
             Text("Need permission")
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MapsAppTheme {
     }
 }

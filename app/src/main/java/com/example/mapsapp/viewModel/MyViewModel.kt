@@ -70,6 +70,8 @@ class MyViewModel: ViewModel() {
     val notRegistered = _notRegistered
     private val _rememberMe = MutableLiveData<Boolean>()
     val rememberMe = _rememberMe
+    private val _login = MutableLiveData<Boolean>(false)
+    val login = _login
 
     fun changeBottomSheetState(){
         _showBottomSheet.value = !_showBottomSheet.value!!
@@ -278,8 +280,10 @@ class MyViewModel: ViewModel() {
 
     fun logout() {
         auth.signOut()
-        _userId.value = ""
-        _loggedUser.value = ""
+        if (_rememberMe.value == false) {
+            _userId.value = ""
+            _loggedUser.value = ""
+        }
     }
 
     fun changeShowToast() {
@@ -289,5 +293,13 @@ class MyViewModel: ViewModel() {
     fun changeRememberMe() {
         if (_rememberMe.value == null) _rememberMe.value = true
         else _rememberMe.value = !_rememberMe.value!!
+    }
+
+    fun setRememberMe(remember:Boolean) {
+        _rememberMe.value = remember
+    }
+
+    fun changeLogin() {
+        _login.value = !_login.value!!
     }
 }

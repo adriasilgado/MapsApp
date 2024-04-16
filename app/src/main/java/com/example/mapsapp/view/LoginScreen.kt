@@ -1,5 +1,6 @@
 package com.example.mapsapp.view
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +52,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
@@ -58,10 +60,26 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
     var password by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
     val goToNext by myViewModel.goToNext.observeAsState()
-    val showToast by myViewModel.showToast.observeAsState()
+    val showToast by myViewModel.showToast.observeAsState(false)
     val rememberMe by myViewModel.rememberMe.observeAsState(false)
+    val login by myViewModel.login.observeAsState(false)
     var emptyEmail by remember { mutableStateOf(true) }
     var emptyPassword by remember { mutableStateOf(true) }
+    var context = LocalContext.current
+    val userPrefs = UserPrefs(context)
+    var enter by remember { mutableStateOf(false) }
+
+    if (!enter) {
+        enter = true
+        CoroutineScope(Dispatchers.Main).launch {
+            userPrefs.getUserData.collect { data ->
+                if (data[2] == "true") {
+                    email = data[0]
+                    password = data[1]
+                }
+            }
+        }
+    }
     Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally){
         Box(modifier = Modifier.fillMaxHeight(0.3f)) {
             Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
@@ -107,24 +125,24 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
                 Row (verticalAlignment = Alignment.CenterVertically){
                     Checkbox(checked = rememberMe!!, onCheckedChange = { myViewModel.changeRememberMe() })
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Recuerdame!", Modifier.align(CenterVertically))
+                    Text("Remember Me!", Modifier.align(CenterVertically))
                 }
             }
 
         }
-        var context = LocalContext.current
-        val userPrefs = UserPrefs(context)
+
         val storedUserData = userPrefs.getUserData.collectAsState(initial = emptyList())
         Button(
             onClick = { CoroutineScope(Dispatchers.IO).launch {
-                userPrefs.saveUserData(email, password)
-            } },
+                userPrefs.saveUserData(email, password, rememberMe.toString())
+            }
+                myViewModel.changeLogin() },
             modifier = Modifier
                 .fillMaxHeight(0.1f)
                 .width(150.dp),
             shape = RoundedCornerShape(25.dp),
             colors = ButtonDefaults.buttonColors(Color.DarkGray),
-            enabled = emptyEmail == false && emptyPassword == false){
+            enabled = (emptyEmail == false && emptyPassword == false) || (email.length > 0 && password.length > 0)){
             Text("Login!", fontFamily = sky)
         }
         if (showToast == true) {
@@ -132,7 +150,13 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
             context = LocalContext.current
             Toast.makeText(context, "Usuario/Contraseña incorrecto.", Toast.LENGTH_SHORT).show()
         }
-        if (storedUserData.value.isNotEmpty() && storedUserData.value[0] != "" && storedUserData.value[1] != "") {
+        if (storedUserData.value.isNotEmpty() && storedUserData.value[0] != "" && storedUserData.value[1] != "" && login == true && showToast == false) {
+            myViewModel.changeLogin()
+            CoroutineScope(Dispatchers.Main).launch {
+                userPrefs.getUserData.collect { data ->
+                    println("datos: $data")
+                }
+            }
             myViewModel.login(storedUserData.value[0], storedUserData.value[1])
             if (goToNext == true) {
                 navigationController.navigate(Routes.MapScreen.route)
