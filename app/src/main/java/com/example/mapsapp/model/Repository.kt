@@ -10,6 +10,7 @@ class Repository {
     fun addMarker(marker: Marca) {
         database.collection("Markers").add(
             hashMapOf(
+                "usuario" to marker.usuario,
                 "lat" to marker.lat,
                 "lon" to marker.lon,
                 "name" to marker.name,
@@ -22,6 +23,7 @@ class Repository {
     fun editMarker(editMarker: Marca) {
         database.collection("Markers").document(editMarker.markerId!!).set(
             hashMapOf(
+                "usuario" to editMarker.usuario,
                 "lat" to editMarker.lat,
                 "lon" to editMarker.lon,
                 "name" to editMarker.name,

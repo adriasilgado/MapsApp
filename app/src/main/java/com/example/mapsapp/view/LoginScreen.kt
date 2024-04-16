@@ -117,13 +117,15 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
             Text("Login!", fontFamily = sky)
         }
         if (showToast == true) {
+            myViewModel.changeShowToast()
             context = LocalContext.current
             Toast.makeText(context, "Usuario/Contraseña incorrecto.", Toast.LENGTH_SHORT).show()
-            myViewModel.changeShowToast()
         }
         if (storedUserData.value.isNotEmpty() && storedUserData.value[0] != "" && storedUserData.value[1] != "") {
             myViewModel.login(storedUserData.value[0], storedUserData.value[1])
-            if (goToNext == true) navigationController.navigate(Routes.MapScreen.route)
+            if (goToNext == true) {
+                navigationController.navigate(Routes.MapScreen.route)
+            }
         }
     }
 }

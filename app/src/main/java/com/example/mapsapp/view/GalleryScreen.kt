@@ -119,6 +119,7 @@ fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel)
                 if (isAddImage == true) {
                     myViewModel.changeisAddImage()
                     myViewModel.editMarker(Marca(
+                        myViewModel.userId.value!!,
                         myViewModel.markerId.value!!,
                         myViewModel.posMarker.value!!.latitude,
                         myViewModel.posMarker.value!!.longitude,

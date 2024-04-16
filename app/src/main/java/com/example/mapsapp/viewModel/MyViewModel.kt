@@ -69,29 +69,6 @@ class MyViewModel: ViewModel() {
     private val _notRegistered = MutableLiveData<Boolean>()
     val notRegistered = _notRegistered
 
-    /*
-    fun addMarker(){
-        val currentList = _markers.value.orEmpty().toMutableList()
-        currentList.add(Marca(_posMarker.value!!.latitude, _posMarker.value!!.longitude, _nameMarker.value!!, _typeMarker.value!!, _photoMaker.value))
-        _markers.value = currentList
-    }
-
-     */
-
-    /*
-    fun editImageMarker(posMarker:LatLng){
-        val currentList = _markers.value.orEmpty().toMutableList()
-        val index = currentList.indexOf(currentList.find { it.lat == posMarker.latitude && it.lon == posMarker.longitude })
-        currentList[index] = Marca(posMarker.latitude, posMarker.longitude, _nameMarker.value!!, _typeMarker.value!!, _photoMaker.value)
-        _posMarker.value = null
-        _nameMarker.value = ""
-        _photoMaker.value = null
-        _typeMarker.value = "avion"
-        _markers.value = currentList
-    }
-
-     */
-
     fun changeBottomSheetState(){
         _showBottomSheet.value = !_showBottomSheet.value!!
     }
@@ -210,7 +187,7 @@ class MyViewModel: ViewModel() {
                     list.add(newMarker)
                 }
             }
-            _markers.value = list
+            _markers.value = list.filter { it.usuario == userId.value }
         }
     }
 

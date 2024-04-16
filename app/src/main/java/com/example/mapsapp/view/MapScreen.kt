@@ -297,6 +297,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 Button(onClick = {
                     myViewModel.addMarker(
                         Marca(
+                            myViewModel.userId.value!!,
                             null,
                             myViewModel.posMarker.value!!.latitude,
                             myViewModel.posMarker.value!!.longitude,
