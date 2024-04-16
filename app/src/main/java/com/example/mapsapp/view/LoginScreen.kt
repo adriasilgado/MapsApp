@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -38,9 +39,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.mapsapp.data.UserPrefs
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.sky
 import com.example.mapsapp.viewModel.MyViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,11 +96,18 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
                         }
                     }
                 )
-                Text(text = "Don't have an account? Sign up!", fontFamily = sky, modifier = Modifier.clickable { navigationController.navigate(Routes.SignUpScreen.route) }.padding(top = 10.dp), color = Color.Gray)
+                Text(text = "Don't have an account? Sign up!", fontFamily = sky, modifier = Modifier
+                    .clickable { navigationController.navigate(Routes.SignUpScreen.route) }
+                    .padding(top = 10.dp), color = Color.Gray)
             }
         }
+        var context = LocalContext.current
+        val userPrefs = UserPrefs(context)
+        val storedUserData = userPrefs.getUserData.collectAsState(initial = emptyList())
         Button(
-            onClick = { myViewModel.login(email, password) },
+            onClick = { CoroutineScope(Dispatchers.IO).launch {
+                userPrefs.saveUserData(email, password)
+            } },
             modifier = Modifier
                 .fillMaxHeight(0.1f)
                 .width(150.dp),
@@ -106,10 +117,13 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
             Text("Login!", fontFamily = sky)
         }
         if (showToast == true) {
-            val context = LocalContext.current
+            context = LocalContext.current
             Toast.makeText(context, "Usuario/Contraseña incorrecto.", Toast.LENGTH_SHORT).show()
             myViewModel.changeShowToast()
         }
-        if (goToNext == true) navigationController.navigate(Routes.MapScreen.route)
+        if (storedUserData.value.isNotEmpty() && storedUserData.value[0] != "" && storedUserData.value[1] != "") {
+            myViewModel.login(storedUserData.value[0], storedUserData.value[1])
+            if (goToNext == true) navigationController.navigate(Routes.MapScreen.route)
+        }
     }
 }
