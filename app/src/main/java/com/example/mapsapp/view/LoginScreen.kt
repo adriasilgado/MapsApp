@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,6 +29,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -50,7 +52,10 @@ import com.example.mapsapp.sky
 import com.example.mapsapp.viewModel.MyViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,6 +79,16 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
         CoroutineScope(Dispatchers.Main).launch {
             userPrefs.getUserData.collect { data ->
                 if (data[2] == "true") {
+                    println("datos: $data")
+                    myViewModel.login(data[0], data[1])
+                    delay(1000)
+                    if (myViewModel.goToNext.value == true) {
+                        withContext(Dispatchers.Main) {
+                            navigationController.navigate(Routes.MapScreen.route)
+                        }
+                    }
+                }
+                else if (rememberMe == true) {
                     email = data[0]
                     password = data[1]
                 }
@@ -131,12 +146,28 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
 
         }
 
-        val storedUserData = userPrefs.getUserData.collectAsState(initial = emptyList())
         Button(
-            onClick = { CoroutineScope(Dispatchers.IO).launch {
-                userPrefs.saveUserData(email, password, rememberMe.toString())
-            }
-                myViewModel.changeLogin() },
+            onClick = {
+                CoroutineScope(Dispatchers.IO).launch {
+                    userPrefs.saveUserData(email, password, rememberMe.toString())
+                    withContext(Dispatchers.Main) {
+                        myViewModel.setLogin(true)
+                    }
+                    val storedUserData = userPrefs.getUserData.first()
+                    if (storedUserData.isNotEmpty() && storedUserData[0] != "" && storedUserData[1] != "" && login == true && showToast == false) {
+                        withContext(Dispatchers.Main) {
+                            myViewModel.setLogin(false)
+                        }
+                        myViewModel.login(storedUserData[0], storedUserData[1])
+                        delay(1000)
+                        if (goToNext == true) {
+                            withContext(Dispatchers.Main) {
+                                navigationController.navigate(Routes.MapScreen.route)
+                            }
+                        }
+                    }
+                }
+            },
             modifier = Modifier
                 .fillMaxHeight(0.1f)
                 .width(150.dp),
@@ -149,18 +180,6 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
             myViewModel.changeShowToast()
             context = LocalContext.current
             Toast.makeText(context, "Usuario/Contraseña incorrecto.", Toast.LENGTH_SHORT).show()
-        }
-        if (storedUserData.value.isNotEmpty() && storedUserData.value[0] != "" && storedUserData.value[1] != "" && login == true && showToast == false) {
-            myViewModel.changeLogin()
-            CoroutineScope(Dispatchers.Main).launch {
-                userPrefs.getUserData.collect { data ->
-                    println("datos: $data")
-                }
-            }
-            myViewModel.login(storedUserData.value[0], storedUserData.value[1])
-            if (goToNext == true) {
-                navigationController.navigate(Routes.MapScreen.route)
-            }
         }
     }
 }

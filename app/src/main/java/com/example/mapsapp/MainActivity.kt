@@ -29,6 +29,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -61,7 +62,11 @@ import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 val sky = FontFamily(Font(R.font.bloom))
 
@@ -114,6 +119,7 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
     val currentRoute = navBackStackEntry?.destination?.route
     val context = LocalContext.current
     val userPrefs = remember { UserPrefs(context) }
+    val rememberMe by myViewModel.rememberMe.observeAsState()
     ModalNavigationDrawer(drawerState = state, gesturesEnabled = false ,drawerContent = {
     ModalDrawerSheet {
         IconButton(onClick = { scope.launch {
@@ -150,12 +156,22 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
         }
         Spacer(modifier = Modifier.weight(1f))
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
-            myViewModel.logout()
-            scope.launch {
-                userPrefs.saveUserData("", "", "")
+            CoroutineScope(Dispatchers.Main).launch {
+                userPrefs.getUserData.collect { data ->
+                    if (rememberMe == true) {
+                        userPrefs.saveUserData(data[0], data[1], "")
+                    }
+                    else userPrefs.saveUserData("", "", "")
+                }
+                myViewModel.logout()
+                withContext(Dispatchers.Main) {
+                    myViewModel.setRememberMe(false)
+                }
+                delay(1000)
+                withContext(Dispatchers.Main) {
+                    navigationController.navigate(Routes.LoginScreen.route)
+                }
             }
-            myViewModel.setRememberMe(false)
-            navigationController.navigate(Routes.LoginScreen.route)
         }) {
             IconButton(onClick = {}) {
                 Icon(imageVector = Icons.AutoMirrored.Filled.Logout, contentDescription = "Logout", tint = Color.Red, modifier = Modifier.fillMaxSize(1f))

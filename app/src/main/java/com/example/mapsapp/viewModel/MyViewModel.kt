@@ -299,7 +299,7 @@ class MyViewModel: ViewModel() {
         _rememberMe.value = remember
     }
 
-    fun changeLogin() {
-        _login.value = !_login.value!!
+    fun setLogin(login:Boolean) {
+        _login.value = login
     }
 }
