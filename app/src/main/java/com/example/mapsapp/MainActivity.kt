@@ -65,6 +65,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -156,13 +157,13 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
         }
         Spacer(modifier = Modifier.weight(1f))
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
-            CoroutineScope(Dispatchers.Main).launch {
-                userPrefs.getUserData.collect { data ->
-                    if (rememberMe == true) {
-                        userPrefs.saveUserData(data[0], data[1], "")
-                    }
-                    else userPrefs.saveUserData("", "", "")
+            CoroutineScope(Dispatchers.IO).launch {
+                val data = userPrefs.getUserData.first()
+                if (rememberMe == true) {
+                    userPrefs.saveUserData(data[0], data[1], "")
                 }
+                else userPrefs.saveUserData("", "", "")
+                println("datos: $data")
                 myViewModel.logout()
                 withContext(Dispatchers.Main) {
                     myViewModel.setRememberMe(false)

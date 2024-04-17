@@ -66,7 +66,8 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
     var passwordVisibility by remember { mutableStateOf(false) }
     val goToNext by myViewModel.goToNext.observeAsState()
     val showToast by myViewModel.showToast.observeAsState(false)
-    val rememberMe by myViewModel.rememberMe.observeAsState(false)
+    val rememberMe by myViewModel.rememberMe.observeAsState()
+    println("remember: $rememberMe")
     val login by myViewModel.login.observeAsState(false)
     var emptyEmail by remember { mutableStateOf(true) }
     var emptyPassword by remember { mutableStateOf(true) }
@@ -95,6 +96,7 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
             }
         }
     }
+
     Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally){
         Box(modifier = Modifier.fillMaxHeight(0.3f)) {
             Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
@@ -138,7 +140,7 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
                     .clickable { navigationController.navigate(Routes.SignUpScreen.route) }
                     .padding(top = 10.dp), color = Color.Gray)
                 Row (verticalAlignment = Alignment.CenterVertically){
-                    Checkbox(checked = rememberMe!!, onCheckedChange = { myViewModel.changeRememberMe() })
+                    Checkbox(checked = rememberMe ?: false, onCheckedChange = { myViewModel.changeRememberMe() })
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Remember Me!", Modifier.align(CenterVertically))
                 }
