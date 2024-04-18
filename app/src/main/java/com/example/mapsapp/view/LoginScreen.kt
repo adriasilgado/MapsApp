@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -74,22 +75,29 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
     var context = LocalContext.current
     val userPrefs = UserPrefs(context)
     var enter by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false)}
 
     if (!enter) {
+        println("entre al if")
         enter = true
         CoroutineScope(Dispatchers.Main).launch {
             userPrefs.getUserData.collect { data ->
                 if (data[2] == "true") {
+                    loading = true
                     println("datos: $data")
                     myViewModel.login(data[0], data[1])
+                    withContext(Dispatchers.Main) {
+                        myViewModel.setRememberMe(true)
+                    }
                     delay(1000)
-                    if (myViewModel.goToNext.value == true) {
+                    if (goToNext == true) {
                         withContext(Dispatchers.Main) {
                             navigationController.navigate(Routes.MapScreen.route)
                         }
                     }
                 }
                 else if (rememberMe == true) {
+                    println("aqui entro al else if")
                     email = data[0]
                     password = data[1]
                 }
@@ -97,91 +105,100 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
         }
     }
 
-    Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally){
-        Box(modifier = Modifier.fillMaxHeight(0.3f)) {
-            Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
-                OutlinedTextField(
-                    value = email,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
-                    onValueChange = {
-                        if (it.isEmpty()) emptyEmail = true
-                        else emptyEmail = false
-                        email = it},
-                    label = { Text("Enter email", fontFamily = sky) },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color.Green,
-                        unfocusedBorderColor = Color.Black
-                    ))
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { newPassword ->
-                        if (newPassword.isEmpty()) emptyPassword = true
-                        else emptyPassword = false
-                        password = newPassword
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
-                    label = { Text("Password", fontFamily = sky) },
-                    visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    trailingIcon = {
-                        IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                            Icon(
-                                imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                                contentDescription = if (passwordVisibility) "Hide password" else "Show password"
-                            )
+    if (!loading) {
+        Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally){
+            Box(modifier = Modifier.fillMaxHeight(0.3f)) {
+                Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+                    OutlinedTextField(
+                        value = email,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth(),
+                        onValueChange = {
+                            if (it.isEmpty()) emptyEmail = true
+                            else emptyEmail = false
+                            email = it},
+                        label = { Text("Enter email", fontFamily = sky) },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Green,
+                            unfocusedBorderColor = Color.Black
+                        ))
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { newPassword ->
+                            if (newPassword.isEmpty()) emptyPassword = true
+                            else emptyPassword = false
+                            password = newPassword
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth(),
+                        label = { Text("Password", fontFamily = sky) },
+                        visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                                Icon(
+                                    imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                    contentDescription = if (passwordVisibility) "Hide password" else "Show password"
+                                )
+                            }
                         }
+                    )
+                    Text(text = "Don't have an account? Sign up!", fontFamily = sky, modifier = Modifier
+                        .clickable { navigationController.navigate(Routes.SignUpScreen.route) }
+                        .padding(top = 10.dp), color = Color.Gray)
+                    Row (verticalAlignment = Alignment.CenterVertically){
+                        Checkbox(checked = rememberMe ?: false, onCheckedChange = { myViewModel.changeRememberMe() })
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Remember Me!", Modifier.align(CenterVertically))
                     }
-                )
-                Text(text = "Don't have an account? Sign up!", fontFamily = sky, modifier = Modifier
-                    .clickable { navigationController.navigate(Routes.SignUpScreen.route) }
-                    .padding(top = 10.dp), color = Color.Gray)
-                Row (verticalAlignment = Alignment.CenterVertically){
-                    Checkbox(checked = rememberMe ?: false, onCheckedChange = { myViewModel.changeRememberMe() })
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Remember Me!", Modifier.align(CenterVertically))
                 }
+
             }
 
-        }
-
-        Button(
-            onClick = {
-                CoroutineScope(Dispatchers.IO).launch {
-                    userPrefs.saveUserData(email, password, rememberMe.toString())
-                    withContext(Dispatchers.Main) {
-                        myViewModel.setLogin(true)
-                    }
-                    val storedUserData = userPrefs.getUserData.first()
-                    if (storedUserData.isNotEmpty() && storedUserData[0] != "" && storedUserData[1] != "" && login == true && showToast == false) {
+            Button(
+                onClick = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        userPrefs.saveUserData(email, password, rememberMe.toString())
                         withContext(Dispatchers.Main) {
-                            myViewModel.setLogin(false)
+                            myViewModel.setLogin(true)
                         }
-                        myViewModel.login(storedUserData[0], storedUserData[1])
-                        delay(1000)
-                        if (goToNext == true) {
+                        val storedUserData = userPrefs.getUserData.first()
+                        if (storedUserData.isNotEmpty() && storedUserData[0] != "" && storedUserData[1] != "" && login == true && showToast == false) {
                             withContext(Dispatchers.Main) {
-                                navigationController.navigate(Routes.MapScreen.route)
+                                myViewModel.setLogin(false)
+                                loading = true
+                            }
+                            myViewModel.login(storedUserData[0], storedUserData[1])
+                            delay(1000)
+                            if (goToNext == true) {
+                                withContext(Dispatchers.Main) {
+                                    navigationController.navigate(Routes.MapScreen.route)
+                                }
                             }
                         }
                     }
-                }
-            },
-            modifier = Modifier
-                .fillMaxHeight(0.1f)
-                .width(150.dp),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(Color.DarkGray),
-            enabled = (emptyEmail == false && emptyPassword == false) || (email.length > 0 && password.length > 0)){
-            Text("Login!", fontFamily = sky)
-        }
-        if (showToast == true) {
-            myViewModel.changeShowToast()
-            context = LocalContext.current
-            Toast.makeText(context, "Usuario/Contraseña incorrecto.", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier
+                    .fillMaxHeight(0.1f)
+                    .width(150.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(Color.DarkGray),
+                enabled = (emptyEmail == false && emptyPassword == false) || (email.length > 0 && password.length > 0)){
+                Text("Login!", fontFamily = sky)
+            }
+            if (showToast == true) {
+                myViewModel.changeShowToast()
+                context = LocalContext.current
+                Toast.makeText(context, "Usuario/Contraseña incorrecto.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
+    else {
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+            CircularProgressIndicator(color = Color.Black, strokeWidth = 10.dp, modifier = Modifier.size(100.dp))
+        }
+    }
+
 }

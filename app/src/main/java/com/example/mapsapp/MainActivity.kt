@@ -7,13 +7,20 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -30,8 +37,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -121,12 +131,23 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
     val context = LocalContext.current
     val userPrefs = remember { UserPrefs(context) }
     val rememberMe by myViewModel.rememberMe.observeAsState()
+    var loading by remember { mutableStateOf(false) }
     ModalNavigationDrawer(drawerState = state, gesturesEnabled = false ,drawerContent = {
     ModalDrawerSheet {
-        IconButton(onClick = { scope.launch {
-            state.close()
-        } }) {
-            Icon(imageVector = Icons.Filled.Close, contentDescription = "Close")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { scope.launch { state.close() } }) {
+                Icon(imageVector = Icons.Filled.Close, contentDescription = "Close")
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile Icon")
+            Text(
+                myViewModel.loggedUser.value!!,
+                fontFamily = sky,
+                modifier = Modifier.padding(end = 16.dp)
+            )
         }
         Divider()
         NavigationDrawerItem(label = {Text("Locations", fontFamily = sky)}, selected = false,
@@ -155,18 +176,24 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
                     myViewModel.changeBottomSheetState()
                 })
         }
+        if (loading) {
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+                CircularProgressIndicator(color = Color.Black, strokeWidth = 10.dp, modifier = Modifier.size(100.dp))
+            }
+        }
         Spacer(modifier = Modifier.weight(1f))
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
+            loading = true
             CoroutineScope(Dispatchers.IO).launch {
                 val data = userPrefs.getUserData.first()
                 if (rememberMe == true) {
+                    println("entro en true")
                     userPrefs.saveUserData(data[0], data[1], "")
                 }
                 else userPrefs.saveUserData("", "", "")
                 println("datos: $data")
-                myViewModel.logout()
                 withContext(Dispatchers.Main) {
-                    myViewModel.setRememberMe(false)
+                    myViewModel.logout()
                 }
                 delay(1000)
                 withContext(Dispatchers.Main) {
