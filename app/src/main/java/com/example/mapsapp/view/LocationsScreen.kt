@@ -3,7 +3,11 @@ package com.example.mapsapp.view
 import android.content.Context
 import android.content.res.Resources
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,22 +27,33 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissState
+import androidx.compose.material3.DismissValue
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +78,7 @@ import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.sky
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
@@ -73,9 +89,11 @@ fun LocationsScreen(navigationController: NavController, myViewModel: MyViewMode
 @Composable
 fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
     val markers by myViewModel.markersList.observeAsState()
-    LazyColumn (modifier = Modifier
-        .fillMaxWidth()
-        .padding(10.dp)){
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+    ) {
         items(markers!!.size) {
             MyRecyclerView(markers!![it], navigationController, myViewModel)
         }
@@ -85,6 +103,7 @@ fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewModel: MyViewModel) {
+    MarcaItem(marca, onRemove = { myViewModel.deleteMarker(it.markerId!!) }, navigationController, myViewModel)
     Card(
         border = BorderStroke(2.dp, Color.LightGray),
         shape = RoundedCornerShape(8.dp),
@@ -101,8 +120,7 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
                     modifier = Modifier
                         .size(125.dp)
                 )
-            }
-            else {
+            } else {
                 Image(
                     painter = painterResource(id = R.drawable.addimage),
                     contentDescription = "Add Image",
@@ -134,7 +152,8 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
                         .padding(8.dp)
                 )
                 Image(
-                    painter = painterResource(id = myViewModel.whatIconBig(marca.tipo)), contentDescription = "Icono",
+                    painter = painterResource(id = myViewModel.whatIconBig(marca.tipo)),
+                    contentDescription = "Icono",
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
@@ -217,6 +236,62 @@ fun getResourceNameFromContext(context: Context, resourceId: Int): String? {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DismissBackground(dismissState: DismissState) {
+    val color = when (dismissState.dismissDirection) {
+        DismissDirection.StartToEnd -> Color.Red
+        else -> Color.Transparent
+    }
+    val direction = dismissState.dismissDirection
+
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color)
+            .padding(12.dp, 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        if (direction == DismissDirection.StartToEnd) {
+            Icon(Icons.Default.Delete, contentDescription = "delete")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MarcaItem(marca: Marca, onRemove: (Marca) -> Unit, navigationController: NavController, myViewModel: MyViewModel) {
+    val context = LocalContext.current
+    var show by remember { mutableStateOf(true) }
+    val currentItem by rememberUpdatedState(marca)
+    val dismissState = rememberDismissState(
+        confirmValueChange = {
+            if (it == DismissValue.DismissedToStart) {
+                show = false
+                true
+            } else false
+        }, positionalThreshold = { 150.dp.toPx() }
+    )
+    AnimatedVisibility(
+        show, exit = fadeOut(spring())
+    ) {
+        SwipeToDismiss(
+            state = dismissState,
+            modifier = Modifier,
+            background = { DismissBackground(dismissState) },
+            dismissContent = {
+                MyRecyclerView(marca, navigationController, myViewModel)
+            })
+    }
+    LaunchedEffect(show) {
+        if (!show) {
+            delay(800)
+            onRemove(currentItem)
+            Toast.makeText(context, "Item removed", Toast.LENGTH_SHORT).show()
+        }
+    }
+}
 
 
 

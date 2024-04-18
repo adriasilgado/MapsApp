@@ -178,6 +178,11 @@ class MyViewModel: ViewModel() {
         getMarkers()
     }
 
+    fun deleteMarker(markerId:String) {
+        repository.deleteMarker(markerId)
+        getMarkers()
+    }
+
     fun getMarkers() {
         repository.getMarkers().addSnapshotListener { value, error ->
             if (error != null) {
