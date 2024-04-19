@@ -236,6 +236,7 @@ class MyViewModel: ViewModel() {
                 storage.downloadUrl.addOnSuccessListener {
                     _photoMaker.value = it.toString()
                     Log.i("IMAGEN", it.toString())
+                    _photoMaker.value = null
                 }
             }
             .addOnFailureListener {

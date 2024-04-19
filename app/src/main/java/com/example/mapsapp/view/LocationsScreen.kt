@@ -111,7 +111,7 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
         Row(modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
-            .clickable { navigationController.navigate(Routes.DetailScreen.createRoute(marca.name)) }) {
+            .clickable { navigationController.navigate(Routes.DetailScreen.createRoute(marca.markerId!!)) }) {
             if (marca.photo != null) {
                 GlideImage(
                     model = marca.photo,

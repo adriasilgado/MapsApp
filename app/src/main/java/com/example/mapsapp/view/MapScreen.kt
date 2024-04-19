@@ -208,6 +208,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
     val showPermissionDenied by myViewModel.showPermissionDenied.observeAsState(false)
     val isCurrentLocation by myViewModel.isCurrentLocation.observeAsState(false)
     val uri by myViewModel.uri.observeAsState()
+    println("imagen: $photoMarker")
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = {isGranted ->
@@ -319,7 +320,6 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                     )
                     myViewModel.changeNameMarker("")
                     myViewModel.changeTypeMarker("avion")
-                    myViewModel.changePhotoMarker(null)
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             myViewModel.changeBottomSheetState()

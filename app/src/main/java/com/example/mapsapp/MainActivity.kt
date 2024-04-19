@@ -104,10 +104,10 @@ class MainActivity : ComponentActivity() {
                         composable(
                             Routes.DetailScreen.route,
                             arguments = listOf(
-                                navArgument("name") {type = NavType.StringType})) {
+                                navArgument("markerId") {type = NavType.StringType})) {
                                 backStackEntry ->
                             DetailScreen(
-                                backStackEntry.arguments?.getString("name").orEmpty(),
+                                backStackEntry.arguments?.getString("markerId").orEmpty(),
                                 navigationController, myViewModel
                             )}
                         composable(Routes.GalleryScreen.route) { GalleryScreen(navigationController, myViewModel) }
@@ -193,6 +193,7 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
                 else userPrefs.saveUserData("", "", "")
                 println("datos: $data")
                 withContext(Dispatchers.Main) {
+                    myViewModel.setWelcome(false)
                     myViewModel.logout()
                 }
                 delay(1000)
