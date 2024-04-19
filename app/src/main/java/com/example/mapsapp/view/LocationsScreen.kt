@@ -103,7 +103,7 @@ fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewModel: MyViewModel) {
-    MarcaItem(marca, onRemove = { myViewModel.deleteMarker(it.markerId!!) }, navigationController, myViewModel)
+    //MarcaItem(marca, onRemove = { myViewModel.deleteMarker(it.markerId!!) }, navigationController, myViewModel)
     Card(
         border = BorderStroke(2.dp, Color.LightGray),
         shape = RoundedCornerShape(8.dp),

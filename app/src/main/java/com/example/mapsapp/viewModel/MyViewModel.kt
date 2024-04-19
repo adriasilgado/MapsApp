@@ -72,6 +72,8 @@ class MyViewModel: ViewModel() {
     val rememberMe = _rememberMe
     private val _login = MutableLiveData<Boolean>(false)
     val login = _login
+    private val _welcome = MutableLiveData<Boolean>(false)
+    val welcome = _welcome
 
     fun changeBottomSheetState(){
         _showBottomSheet.value = !_showBottomSheet.value!!
@@ -306,5 +308,9 @@ class MyViewModel: ViewModel() {
 
     fun setLogin(login:Boolean) {
         _login.value = login
+    }
+
+    fun setWelcome(welcome:Boolean) {
+        _welcome.value = welcome
     }
 }

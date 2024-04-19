@@ -100,7 +100,7 @@ fun MapScreen(navigationController: NavController, myViewModel: MyViewModel) {
 fun MyScaffold(state: DrawerState, navigationController: NavController, myViewModel: MyViewModel) {
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    var welcome by remember { mutableStateOf(false) }
+    val welcome by myViewModel.welcome.observeAsState()
     Scaffold(topBar = { MyTopAppBar(state, navigationController, myViewModel) }) { paddingValues ->
         Box(
             modifier = Modifier
@@ -109,8 +109,8 @@ fun MyScaffold(state: DrawerState, navigationController: NavController, myViewMo
         ) {
             if (currentRoute == "map_screen") {
                 var context = LocalContext.current
-                if (!welcome) {
-                    welcome = true
+                if (!welcome!!) {
+                    myViewModel.setWelcome(true)
                     Toast.makeText(context, "Welcome, ${myViewModel.loggedUser.value}", Toast.LENGTH_SHORT).show()
                 }
                 Map(navigationController, myViewModel)
