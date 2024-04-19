@@ -74,6 +74,8 @@ class MyViewModel: ViewModel() {
     val login = _login
     private val _welcome = MutableLiveData<Boolean>(false)
     val welcome = _welcome
+    private val _uri = MutableLiveData<Uri>()
+    val uri = _uri
 
     fun changeBottomSheetState(){
         _showBottomSheet.value = !_showBottomSheet.value!!
@@ -312,5 +314,9 @@ class MyViewModel: ViewModel() {
 
     fun setWelcome(welcome:Boolean) {
         _welcome.value = welcome
+    }
+
+    fun setUri(uri:Uri) {
+        _uri.value = uri
     }
 }

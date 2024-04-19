@@ -207,6 +207,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
     val shouldShowPermissionRationale by myViewModel.shouldShowPermissionRationale.observeAsState(false)
     val showPermissionDenied by myViewModel.showPermissionDenied.observeAsState(false)
     val isCurrentLocation by myViewModel.isCurrentLocation.observeAsState(false)
+    val uri by myViewModel.uri.observeAsState()
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = {isGranted ->
@@ -304,6 +305,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 }
                 Spacer(modifier = Modifier.width(25.dp))
                 Button(onClick = {
+                    if (uri != null) myViewModel.uploadImage(uri!!)
                     myViewModel.addMarker(
                         Marca(
                             myViewModel.userId.value!!,

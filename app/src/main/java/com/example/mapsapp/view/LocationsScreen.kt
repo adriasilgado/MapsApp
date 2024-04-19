@@ -94,8 +94,8 @@ fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
             .fillMaxWidth()
             .padding(10.dp)
     ) {
-        items(markers!!.size) {
-            MyRecyclerView(markers!![it], navigationController, myViewModel)
+        items(markers!!.size) {index ->
+            MarcaItem(markers!![index], onRemove = { myViewModel.deleteMarker(markers!![index].markerId!!) }, navigationController, myViewModel)
         }
     }
 }
@@ -103,7 +103,6 @@ fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewModel: MyViewModel) {
-    //MarcaItem(marca, onRemove = { myViewModel.deleteMarker(it.markerId!!) }, navigationController, myViewModel)
     Card(
         border = BorderStroke(2.dp, Color.LightGray),
         shape = RoundedCornerShape(8.dp),
@@ -240,7 +239,7 @@ fun getResourceNameFromContext(context: Context, resourceId: Int): String? {
 @Composable
 fun DismissBackground(dismissState: DismissState) {
     val color = when (dismissState.dismissDirection) {
-        DismissDirection.StartToEnd -> Color.Red
+        DismissDirection.EndToStart -> Color.Red
         else -> Color.Transparent
     }
     val direction = dismissState.dismissDirection
@@ -251,9 +250,9 @@ fun DismissBackground(dismissState: DismissState) {
             .background(color)
             .padding(12.dp, 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.End
     ) {
-        if (direction == DismissDirection.StartToEnd) {
+        if (direction == DismissDirection.EndToStart) {
             Icon(Icons.Default.Delete, contentDescription = "delete")
         }
     }
@@ -271,7 +270,7 @@ fun MarcaItem(marca: Marca, onRemove: (Marca) -> Unit, navigationController: Nav
                 show = false
                 true
             } else false
-        }, positionalThreshold = { 150.dp.toPx() }
+        }, positionalThreshold = { 125.dp.toPx() }
     )
     AnimatedVisibility(
         show, exit = fadeOut(spring())

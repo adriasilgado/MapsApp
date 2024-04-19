@@ -114,8 +114,9 @@ fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel)
             )
             Button(onClick = {
                 println(uri)
-                if (uri != null) myViewModel.uploadImage(uri!!)
+                if (uri != null) myViewModel.setUri(uri!!)
                 myViewModel.changePhotoMarker(uri)
+                println("isAddImage: $isAddImage")
                 if (isAddImage == true) {
                     myViewModel.changeisAddImage()
                     myViewModel.editMarker(Marca(
