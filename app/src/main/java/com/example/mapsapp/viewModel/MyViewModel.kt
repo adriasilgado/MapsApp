@@ -76,6 +76,12 @@ class MyViewModel: ViewModel() {
     val welcome = _welcome
     private val _uri = MutableLiveData<Uri>()
     val uri = _uri
+    private val _locationPermissionGranted = MutableLiveData<Boolean>()
+    val locationPermissionGranted = _locationPermissionGranted
+    private val _locationShouldShowPermissionRationale = MutableLiveData(false)
+    val locationShouldShowPermissionRationale = _locationShouldShowPermissionRationale
+    private val _locationShowPermissionDenied = MutableLiveData(false)
+    val locationShowPermissionDenied = _locationShowPermissionDenied
 
     fun changeBottomSheetState(){
         _showBottomSheet.value = !_showBottomSheet.value!!
@@ -138,6 +144,18 @@ class MyViewModel: ViewModel() {
     }
 
     fun setShowPermissionDenied(denied:Boolean) {
+        _showPermissionDenied.value = denied
+    }
+
+    fun setLocationCameraPermissionGranted(granted:Boolean) {
+        _cameraPermissionGranted.value = granted
+    }
+
+    fun setLocationShouldShowPermissionRationale(should:Boolean) {
+        _shouldShowPermissionRationale.value = should
+    }
+
+    fun setLocationShowPermissionDenied(denied:Boolean) {
         _showPermissionDenied.value = denied
     }
 

@@ -1,9 +1,14 @@
 package com.example.mapsapp
 
+import android.Manifest
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -20,6 +25,7 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
@@ -50,6 +56,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -67,6 +74,7 @@ import com.example.mapsapp.view.MyScaffold
 import com.example.mapsapp.view.LocationsScreen
 import com.example.mapsapp.view.LoginScreen
 import com.example.mapsapp.view.MapScreen
+import com.example.mapsapp.view.PermissionDeclinedScreen
 import com.example.mapsapp.view.SignUpScreen
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -206,6 +214,52 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
             Text("Logout", fontFamily = sky, color = Color.Red, fontSize = 25.sp)
         }
     } }) {
+        /*
+        val isLocationPermissionGranted by myViewModel.locationPermissionGranted.observeAsState(false)
+        val shouldShowPermissionRationale by myViewModel.locationShouldShowPermissionRationale.observeAsState(false)
+        val showPermissionDenied by myViewModel.locationShowPermissionDenied.observeAsState(false)
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+            onResult = {isGranted ->
+                if (isGranted) {
+                    myViewModel.setLocationCameraPermissionGranted(true)
+                }
+                else {
+                    myViewModel.setLocationShouldShowPermissionRationale(
+                        ActivityCompat.shouldShowRequestPermissionRationale(
+                            context as Activity,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+                    )
+
+                    if (!shouldShowPermissionRationale) {
+                        Log.i("MapScreen", "No podemos volver a pedir permisos")
+                        myViewModel.setLocationShowPermissionDenied(true)
+                    }
+                }
+            })
+        Column (horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()){
+            Column (horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()){
+                Button(onClick = {
+                    if (!isLocationPermissionGranted) {
+                        launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                    else {
+                        navigationController.navigate(Routes.MapScreen.route)
+                    }
+                    println("DeclinedScreen: $showPermissionDenied")
+                }) {
+                    Text("Request Location Permission")
+                }
+            }
+            if (showPermissionDenied) {
+                PermissionDeclinedScreen()
+            }
+        }
+
+         */
+
+
         val permissionState = rememberPermissionState(permission = android.Manifest.permission.ACCESS_FINE_LOCATION)
         LaunchedEffect(Unit) {
             permissionState.launchPermissionRequest()
@@ -216,5 +270,7 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
         else {
             Text("Need permission")
         }
+
+
     }
 }
