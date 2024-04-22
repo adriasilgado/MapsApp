@@ -122,7 +122,8 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Color.Green,
                             unfocusedBorderColor = Color.Black
-                        ))
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
                     OutlinedTextField(
                         value = password,
                         onValueChange = { newPassword ->

@@ -193,18 +193,16 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
                 else userPrefs.saveUserData("", "", "")
                 println("datos: $data")
                 withContext(Dispatchers.Main) {
-                    myViewModel.setWelcome(false)
                     myViewModel.logout()
                 }
                 delay(1000)
                 withContext(Dispatchers.Main) {
                     navigationController.navigate(Routes.LoginScreen.route)
+                    myViewModel.setWelcome(false)
                 }
             }
         }) {
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.Logout, contentDescription = "Logout", tint = Color.Red, modifier = Modifier.fillMaxSize(1f))
-            }
+            Icon(imageVector = Icons.AutoMirrored.Filled.Logout, contentDescription = "Logout", tint = Color.Red, modifier = Modifier.fillMaxSize(0.1f))
             Text("Logout", fontFamily = sky, color = Color.Red, fontSize = 25.sp)
         }
     } }) {

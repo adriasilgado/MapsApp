@@ -276,7 +276,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                         navigationController.navigate(Routes.CameraScreen.route)
                     }},
                     modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                    Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Back",
+                    Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Go to Camera",
                         modifier = Modifier.fillMaxSize())
                 }
                 if (showPermissionDenied) {
