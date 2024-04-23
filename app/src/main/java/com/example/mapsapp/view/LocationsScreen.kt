@@ -88,6 +88,13 @@ fun LocationsScreen(navigationController: NavController, myViewModel: MyViewMode
 
 @Composable
 fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
+    myViewModel.changeNameMarker("")
+    myViewModel.changeTypeMarker("")
+    val pos: LatLng = LatLng(0.0, 0.0)
+    myViewModel.changePosMarker(pos)
+    myViewModel.changeisAddImage()
+    myViewModel.changeMarkerId("")
+    myViewModel.changePhotoMarker(null)
     val markers by myViewModel.markersList.observeAsState()
     LazyColumn(
         modifier = Modifier

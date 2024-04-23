@@ -306,7 +306,17 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 }
                 Spacer(modifier = Modifier.width(25.dp))
                 Button(onClick = {
-                    if (uri != null) myViewModel.uploadImage(uri!!)
+                    println("URI: $uri")
+                    myViewModel.uploadImage(uri!!, Marca(
+                        myViewModel.userId.value!!,
+                        null,
+                        myViewModel.posMarker.value!!.latitude,
+                        myViewModel.posMarker.value!!.longitude,
+                        myViewModel.nameMaker.value!!,
+                        myViewModel.typeMarker.value!!,
+                        myViewModel.photoMarker.value
+                    ))
+                    /*
                     myViewModel.addMarker(
                         Marca(
                             myViewModel.userId.value!!,
@@ -318,8 +328,8 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                             myViewModel.photoMarker.value
                         )
                     )
-                    myViewModel.changeNameMarker("")
-                    myViewModel.changeTypeMarker("avion")
+
+                     */
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             myViewModel.changeBottomSheetState()

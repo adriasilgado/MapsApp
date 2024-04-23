@@ -243,7 +243,7 @@ class MyViewModel: ViewModel() {
         }
     }
 
-    fun uploadImage(imageUri: Uri) {
+    fun uploadImage(imageUri: Uri, marker: Marca) {
         val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault())
         val now = Date()
         val fileName = formatter.format(now)
@@ -252,13 +252,34 @@ class MyViewModel: ViewModel() {
             .addOnSuccessListener {
                 Log.i("IMAGE UPLOAD", "Image uploaded successfully")
                 storage.downloadUrl.addOnSuccessListener {
-                    _photoMaker.value = it.toString()
+                    if (uri != null) {
+                        addMarker(Marca(
+                            userId.value!!,
+                            "",
+                            posMarker.value!!.latitude,
+                            posMarker.value!!.longitude,
+                            nameMaker.value!!,
+                            typeMarker.value!!,
+                            it.toString()
+                        ))
+                    }
+                    _nameMarker.value = ""
+                    _typeMarker.value = "avion"
                     Log.i("IMAGEN", it.toString())
                     _photoMaker.value = null
                 }
             }
             .addOnFailureListener {
                 Log.e("IMAGE UPLOAD", "Image upload failed")
+                addMarker(Marca(
+                    userId.value!!,
+                    "",
+                    posMarker.value!!.latitude,
+                    posMarker.value!!.longitude,
+                    nameMaker.value!!,
+                    typeMarker.value!!,
+                    null
+                ))
             }
     }
 
@@ -275,6 +296,7 @@ class MyViewModel: ViewModel() {
                 else {
                     _goToNext.value = false
                 }
+
                 modifyProcessing()
             }
             .addOnFailureListener {

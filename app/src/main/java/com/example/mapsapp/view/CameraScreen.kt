@@ -1,9 +1,12 @@
 package com.example.mapsapp.view
 
 import android.Manifest
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture.OnImageCapturedCallback
@@ -54,11 +57,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.example.mapsapp.model.Marca
 import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.viewModel.MyViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.maps.model.LatLng
+import java.io.OutputStream
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -109,10 +115,28 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                 Button(
                     onClick = {
                         takePhoto(context, controller) { photo ->
-                            //myViewModel.changePhotoMarker(photo)
+                            myViewModel.changePhotoMarker(bitmapToUri(context, photo))
                             if (isAddImage == true) {
-                                //myViewModel.editImageMarker(myViewModel.posMarker.value!!)
                                 myViewModel.changeisAddImage()
+                                myViewModel.editMarker(
+                                    Marca(
+                                    myViewModel.userId.value!!,
+                                    myViewModel.markerId.value!!,
+                                    myViewModel.posMarker.value!!.latitude,
+                                    myViewModel.posMarker.value!!.longitude,
+                                    myViewModel.nameMaker.value!!,
+                                    myViewModel.typeMarker.value!!,
+                                    myViewModel.photoMarker.value!!,
+                                )
+                                )
+                                myViewModel.changeNameMarker("")
+                                myViewModel.changeTypeMarker("")
+                                val pos: LatLng = LatLng(0.0, 0.0)
+                                myViewModel.changePosMarker(pos)
+                                myViewModel.changeisAddImage()
+                                myViewModel.changeMarkerId("")
+                                myViewModel.changePhotoMarker(null)
+                                navigationController.navigate(Routes.LocationsScreen.route)
                             }
                             navigationController.navigateUp()
                         }
@@ -183,4 +207,23 @@ private fun takePhoto(
             }
         }
     )
+}
+
+fun bitmapToUri(context: Context, bitmap: Bitmap): Uri? {
+    val filename = "${System.currentTimeMillis()}.jpg"
+    val values = ContentValues().apply {
+        put(MediaStore.Images.Media.TITLE, filename)
+        put(MediaStore.Images.Media.DISPLAY_NAME, filename)
+        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis())
+        put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
+    }
+
+    val uri: Uri? = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+    uri?.let {
+        val outstream: OutputStream? = context.contentResolver.openOutputStream(it)
+        outstream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+        outstream?.close()
+    }
+    return uri
 }

@@ -160,6 +160,7 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
 
             Button(
                 onClick = {
+                    println("email: $email, password: $password")
                     CoroutineScope(Dispatchers.IO).launch {
                         userPrefs.saveUserData(email, password, rememberMe.toString())
                         withContext(Dispatchers.Main) {
@@ -169,10 +170,10 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
                         if (storedUserData.isNotEmpty() && storedUserData[0] != "" && storedUserData[1] != "" && login == true && showToast == false) {
                             withContext(Dispatchers.Main) {
                                 myViewModel.setLogin(false)
-                                loading = true
                             }
                             myViewModel.login(storedUserData[0], storedUserData[1])
                             delay(1000)
+                            loading = true
                             if (goToNext == true) {
                                 withContext(Dispatchers.Main) {
                                     navigationController.navigate(Routes.MapScreen.route)
