@@ -116,7 +116,10 @@ fun DetailScreen(markerId:String, navigationController: NavController, myViewMod
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(100.dp)
-                                .clickable { navigationController.navigate(Routes.CameraScreen.route) }
+                                .clickable {
+                                    myViewModel.changeMarkerId(markerId)
+                                    myViewModel.setIsAddImage(true)
+                                    navigationController.navigate(Routes.CameraScreen.route) }
                                 .background(Color.DarkGray)
                                 .padding(8.dp)
                         )

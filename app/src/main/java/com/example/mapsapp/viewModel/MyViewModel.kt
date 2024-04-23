@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.storage.FirebaseStorage
+import java.lang.Thread.sleep
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -252,7 +253,7 @@ class MyViewModel: ViewModel() {
             .addOnSuccessListener {
                 Log.i("IMAGE UPLOAD", "Image uploaded successfully")
                 storage.downloadUrl.addOnSuccessListener {
-                    if (!isAddImage.value!!) {
+                    if (!_isAddImage.value!!) {
                         addMarker(
                             Marca(
                                 marker.usuario,
@@ -266,6 +267,7 @@ class MyViewModel: ViewModel() {
                         )
                     }
                     else {
+                        println("hola entro por aqui")
                         editMarker(
                             Marca(
                                 marker.usuario,
@@ -277,7 +279,7 @@ class MyViewModel: ViewModel() {
                                 it.toString()
                             )
                         )
-                        changeisAddImage()
+                        setIsAddImage(false)
                     }
                     _nameMarker.value = ""
                     _typeMarker.value = ""
@@ -375,5 +377,17 @@ class MyViewModel: ViewModel() {
 
     fun setUri(uri:Uri) {
         _uri.value = uri
+    }
+
+    fun setIsAddImage(isAddImage:Boolean) {
+        _isAddImage.value = isAddImage
+    }
+
+    fun setMarker(marker: Marca) {
+        _loggedUser.value = marker.usuario
+        _posMarker.value = LatLng(marker.lat, marker.lon)
+        _nameMarker.value = marker.name
+        _typeMarker.value = marker.tipo
+        _photoMaker.value = marker.photo
     }
 }

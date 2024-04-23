@@ -157,11 +157,20 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                             takePhoto(context, controller) { photo ->
                                 myViewModel.setUri(bitmapToUri(context, photo)!!)
                                 if (isAddImage == true) {
-                                    myViewModel.changeisAddImage()
-                                    myViewModel.editMarker(
+                                    println("pues estoy por aqui")
+                                    println("Marca: ${Marca(
+                                        myViewModel.userId.value,
+                                        myViewModel.markerId.value,
+                                        myViewModel.posMarker.value!!.latitude,
+                                        myViewModel.posMarker.value!!.longitude,
+                                        myViewModel.nameMaker.value!!,
+                                        myViewModel.typeMarker.value!!,
+                                        myViewModel.uri.value.toString(),
+                                    )}")
+                                    myViewModel.uploadImage(myViewModel.uri.value!!,
                                         Marca(
                                             myViewModel.userId.value!!,
-                                            myViewModel.markerId.value!!,
+                                            myViewModel.markerId.value,
                                             myViewModel.posMarker.value!!.latitude,
                                             myViewModel.posMarker.value!!.longitude,
                                             myViewModel.nameMaker.value!!,
@@ -169,18 +178,10 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                                             myViewModel.uri.value!!.toString(),
                                         )
                                     )
-                                    /*
-                                    myViewModel.changeNameMarker("")
-                                    myViewModel.changeTypeMarker("")
-                                    val pos: LatLng = LatLng(0.0, 0.0)
-                                    myViewModel.changePosMarker(pos)
-                                    myViewModel.changeisAddImage()
-                                    myViewModel.changeMarkerId("")
-                                    myViewModel.changePhotoMarker(null)
-                                     */
+                                    Thread.sleep(2000)
                                     navigationController.navigate(Routes.LocationsScreen.route)
                                 }
-                                navigationController.navigateUp()
+                                else {navigationController.navigateUp()}
                             }
                         },
                         modifier = Modifier
@@ -203,7 +204,7 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                                 myViewModel.uploadImage(uri!!,
                                     Marca(
                                         myViewModel.userId.value!!,
-                                        myViewModel.markerId.value!!,
+                                        myViewModel.markerId.value,
                                         myViewModel.posMarker.value!!.latitude,
                                         myViewModel.posMarker.value!!.longitude,
                                         myViewModel.nameMaker.value!!,
@@ -211,18 +212,10 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                                         myViewModel.uri.value!!.toString(),
                                     )
                                 )
-                                /*
-                                myViewModel.changeNameMarker("")
-                                myViewModel.changeTypeMarker("")
-                                val pos: LatLng = LatLng(0.0, 0.0)
-                                myViewModel.changePosMarker(pos)
-                                myViewModel.changeisAddImage()
-                                myViewModel.changeMarkerId("")
-                                myViewModel.changePhotoMarker(null)
-                                 */
                                 navigationController.navigate(Routes.LocationsScreen.route)
                             }
-                            navigationController.navigateUp()
+                            else {navigationController.navigateUp()}
+
                         },
                         modifier = Modifier
                             .height(64.dp)

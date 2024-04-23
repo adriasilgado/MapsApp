@@ -92,17 +92,18 @@ fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
     myViewModel.changeTypeMarker("")
     val pos: LatLng = LatLng(0.0, 0.0)
     myViewModel.changePosMarker(pos)
-    myViewModel.changeisAddImage()
     myViewModel.changeMarkerId("")
     myViewModel.changePhotoMarker(null)
     val markers by myViewModel.markersList.observeAsState()
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-    ) {
-        items(markers!!.size) {index ->
-            MarcaItem(markers!![index], onRemove = { myViewModel.deleteMarker(markers!![index].markerId!!) }, navigationController, myViewModel)
+    if (markers != null) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
+            items(markers!!.size) {index ->
+                MarcaItem(markers!![index], onRemove = { myViewModel.deleteMarker(markers!![index].markerId!!) }, navigationController, myViewModel)
+            }
         }
     }
 }
@@ -134,12 +135,18 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
                     modifier = Modifier
                         .size(100.dp)
                         .clickable {
-                            myViewModel.changeNameMarker(marca.name)
-                            myViewModel.changeTypeMarker(marca.tipo)
-                            val pos: LatLng = LatLng(marca.lat, marca.lon)
-                            myViewModel.changePosMarker(pos)
-                            myViewModel.changeisAddImage()
+                            println("la id es ${marca.markerId}, el marker es $marca")
+                            myViewModel.setMarker(Marca(
+                                usuario = marca.usuario,
+                                markerId = marca.markerId,
+                                lat = marca.lat,
+                                lon = marca.lon,
+                                name = marca.name,
+                                tipo = marca.tipo,
+                                photo = null
+                            ))
                             myViewModel.changeMarkerId(marca.markerId!!)
+                            myViewModel.setIsAddImage(true)
                             navigationController.navigate(Routes.CameraScreen.route)
                         }
                 )
