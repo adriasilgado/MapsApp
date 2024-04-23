@@ -32,7 +32,7 @@ class MyViewModel: ViewModel() {
     val photoMarker = _photoMaker
     private val _press = MutableLiveData<Boolean>(false)
     val press = _press
-    private val _typeMarker = MutableLiveData<String>("avion")
+    private val _typeMarker = MutableLiveData<String>("")
     val typeMarker = _typeMarker
     private val _cameraPermissionGranted = MutableLiveData(false)
     val cameraPermissionGranted = _cameraPermissionGranted
@@ -252,19 +252,37 @@ class MyViewModel: ViewModel() {
             .addOnSuccessListener {
                 Log.i("IMAGE UPLOAD", "Image uploaded successfully")
                 storage.downloadUrl.addOnSuccessListener {
-                        addMarker(Marca(
-                            userId.value!!,
-                            "",
-                            posMarker.value!!.latitude,
-                            posMarker.value!!.longitude,
-                            nameMaker.value!!,
-                            typeMarker.value!!,
-                            it.toString()
-                        ))
+                    if (!isAddImage.value!!) {
+                        addMarker(
+                            Marca(
+                                marker.usuario,
+                                "",
+                                marker.lat,
+                                marker.lon,
+                                marker.name,
+                                marker.tipo,
+                                it.toString()
+                            )
+                        )
+                    }
+                    else {
+                        editMarker(
+                            Marca(
+                                marker.usuario,
+                                marker.markerId,
+                                marker.lat,
+                                marker.lon,
+                                marker.name,
+                                marker.tipo,
+                                it.toString()
+                            )
+                        )
+                        changeisAddImage()
+                    }
                     _nameMarker.value = ""
-                    _typeMarker.value = "avion"
+                    _typeMarker.value = ""
                     Log.i("IMAGEN", it.toString())
-                    _photoMaker.value = null
+                    _uri.value = null
                 }
             }
             .addOnFailureListener {

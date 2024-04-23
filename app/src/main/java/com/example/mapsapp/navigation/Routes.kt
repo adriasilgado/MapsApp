@@ -7,7 +7,6 @@ sealed class Routes(val route:String) {
     object DetailScreen:Routes("detail_screen/{markerId}") {
         fun createRoute(markerId: String) = "detail_screen/$markerId"
     }
-    object GalleryScreen: Routes("gallery_screen")
     object LoginScreen: Routes("login_screen")
     object SignUpScreen: Routes("sign_up_screen")
 }

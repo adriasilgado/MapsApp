@@ -257,9 +257,9 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
             Spacer(modifier = Modifier.height(20.dp))
             EleccionTipo(myViewModel)
             Spacer(modifier = Modifier.height(20.dp))
-            if (photoMarker != null) {
+            if (uri != null) {
                 GlideImage(
-                    model = photoMarker!!,
+                    model = uri!!,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -290,7 +290,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 Button(onClick = {
                     myViewModel.changeNameMarker("")
                     myViewModel.changePhotoMarker(null)
-                    myViewModel.changeTypeMarker("avion")
+                    myViewModel.changeTypeMarker("")
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             myViewModel.changeBottomSheetState()
@@ -332,6 +332,9 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                                 null
                             )
                         )
+                        myViewModel.changeNameMarker("")
+                        myViewModel.changePhotoMarker(null)
+                        myViewModel.changeTypeMarker("")
                     }
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {

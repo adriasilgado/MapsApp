@@ -69,7 +69,6 @@ import com.example.mapsapp.navigation.Routes
 import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.CameraScreen
 import com.example.mapsapp.view.DetailScreen
-import com.example.mapsapp.view.GalleryScreen
 import com.example.mapsapp.view.MyScaffold
 import com.example.mapsapp.view.LocationsScreen
 import com.example.mapsapp.view.LoginScreen
@@ -118,7 +117,6 @@ class MainActivity : ComponentActivity() {
                                 backStackEntry.arguments?.getString("markerId").orEmpty(),
                                 navigationController, myViewModel
                             )}
-                        composable(Routes.GalleryScreen.route) { GalleryScreen(navigationController, myViewModel) }
                         composable(Routes.LoginScreen.route) { LoginScreen(navigationController, myViewModel) }
                         composable(Routes.SignUpScreen.route) { SignUpScreen(navigationController, myViewModel) }
                     }
