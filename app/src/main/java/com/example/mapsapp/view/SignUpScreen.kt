@@ -3,6 +3,7 @@ package com.example.mapsapp.view
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -55,118 +57,143 @@ fun SignUpScreen(navigationController: NavController, myViewModel: MyViewModel) 
     var emptyEmail by remember { mutableStateOf(true) }
     var emptyPassword by remember { mutableStateOf(true) }
     val context = LocalContext.current
-    Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
-        OutlinedTextField(
-            value = name,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-            onValueChange = {
-                if (it.isEmpty()) emptyName = true
-                else emptyName = false
-                name = it},
-            label = { Text("Enter name", fontFamily = sky) },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color.Green,
-                unfocusedBorderColor = Color.Black
-            ))
-        OutlinedTextField(
-            value = email,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-            onValueChange = {
-                if (it.isEmpty()) emptyEmail = true
-                else emptyEmail = false
-                email = it},
-            label = { Text("Enter email", fontFamily = sky) },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color.Green,
-                unfocusedBorderColor = Color.Black
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
-        OutlinedTextField(
-            value = password,
-            onValueChange = { newPassword ->
-                if (newPassword.isEmpty()) emptyPassword = true
-                else emptyPassword = false
-                password = newPassword
-            },
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-            label = { Text("Password", fontFamily = sky) },
-            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            trailingIcon = {
-                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                    Icon(
-                        imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                        contentDescription = if (passwordVisibility) "Hide password" else "Show password"
-                    )
-                }
-            }
-        )
-        OutlinedTextField(
-            value = secondPassword,
-            onValueChange = { newPassword ->
-                if (newPassword.isEmpty()) emptyPassword = true
-                else emptyPassword = false
-                secondPassword = newPassword
-            },
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-            label = { Text("Repeat password", fontFamily = sky) },
-            visualTransformation = if (secondPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            trailingIcon = {
-                IconButton(onClick = { secondPasswordVisibility = !secondPasswordVisibility }) {
-                    Icon(
-                        imageVector = if (secondPasswordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                        contentDescription = if (secondPasswordVisibility) "Hide password" else "Show password"
-                    )
-                }
-            }
-        )
-        Button(
-            onClick = {
-                if (email.contains("@") && email.contains(".")) {
-                    if (password.length >= 6) {
-                        if (password == secondPassword) {
-                            myViewModel.register(email, password)
-                            if (showToast == false) {
-                                navigationController.navigate(Routes.LoginScreen.route)
-                            }
-                            else {
-                                Toast.makeText(context, "Email ya registrado", Toast.LENGTH_SHORT).show()
-                                myViewModel.changeShowToast()
-                            }
-                        }
-                        else {
-                            Toast.makeText(context, "Las contraseñas no son iguales.", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    else {
-                        Toast.makeText(context, "La contraseña debe tener al menos 6 caracteres.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                      else {
-                    Toast.makeText(context, "Email no válido.", Toast.LENGTH_SHORT).show()
-                      }},
-            modifier = Modifier
-                .fillMaxHeight(0.15f)
-                .width(150.dp)
-                .padding(top = 20.dp),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(Color.DarkGray),
-            enabled = !emptyEmail && !emptyPassword
-        ){
-            Text("Register!", fontFamily = sky)
+    Box(modifier = Modifier.fillMaxSize()) {
+        IconButton(
+            onClick = { navigationController.navigateUp() },
+            modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back")
         }
-        if (showToast == true) {
-            Toast.makeText(context, "Email ya registrado", Toast.LENGTH_SHORT).show()
-            myViewModel.changeShowToast()
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
+                value = name,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                onValueChange = {
+                    if (it.isEmpty()) emptyName = true
+                    else emptyName = false
+                    name = it
+                },
+                label = { Text("Enter name", fontFamily = sky) },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Green,
+                    unfocusedBorderColor = Color.Black
+                )
+            )
+            OutlinedTextField(
+                value = email,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                onValueChange = {
+                    if (it.isEmpty()) emptyEmail = true
+                    else emptyEmail = false
+                    email = it
+                },
+                label = { Text("Enter email", fontFamily = sky) },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Green,
+                    unfocusedBorderColor = Color.Black
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            )
+            OutlinedTextField(
+                value = password,
+                onValueChange = { newPassword ->
+                    if (newPassword.isEmpty()) emptyPassword = true
+                    else emptyPassword = false
+                    password = newPassword
+                },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                label = { Text("Password", fontFamily = sky) },
+                visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                        Icon(
+                            imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = if (passwordVisibility) "Hide password" else "Show password"
+                        )
+                    }
+                }
+            )
+            OutlinedTextField(
+                value = secondPassword,
+                onValueChange = { newPassword ->
+                    if (newPassword.isEmpty()) emptyPassword = true
+                    else emptyPassword = false
+                    secondPassword = newPassword
+                },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                label = { Text("Repeat password", fontFamily = sky) },
+                visualTransformation = if (secondPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    IconButton(onClick = { secondPasswordVisibility = !secondPasswordVisibility }) {
+                        Icon(
+                            imageVector = if (secondPasswordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = if (secondPasswordVisibility) "Hide password" else "Show password"
+                        )
+                    }
+                }
+            )
+            Button(
+                onClick = {
+                    if (email.contains("@") && email.contains(".")) {
+                        if (password.length >= 6) {
+                            if (password == secondPassword) {
+                                myViewModel.register(email, password)
+                                if (showToast == false) {
+                                    navigationController.navigate(Routes.LoginScreen.route)
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Email ya registrado",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    myViewModel.changeShowToast()
+                                }
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Las contraseñas no son iguales.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "La contraseña debe tener al menos 6 caracteres.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        Toast.makeText(context, "Email no válido.", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxHeight(0.15f)
+                    .width(150.dp)
+                    .padding(top = 20.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(Color.DarkGray),
+                enabled = !emptyEmail && !emptyPassword
+            ) {
+                Text("Register!", fontFamily = sky)
+            }
+            if (showToast == true) {
+                Toast.makeText(context, "Email ya registrado", Toast.LENGTH_SHORT).show()
+                myViewModel.changeShowToast()
+            }
         }
     }
 }

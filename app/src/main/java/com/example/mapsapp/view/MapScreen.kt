@@ -307,29 +307,32 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 Spacer(modifier = Modifier.width(25.dp))
                 Button(onClick = {
                     println("URI: $uri")
-                    myViewModel.uploadImage(uri!!, Marca(
-                        myViewModel.userId.value!!,
-                        null,
-                        myViewModel.posMarker.value!!.latitude,
-                        myViewModel.posMarker.value!!.longitude,
-                        myViewModel.nameMaker.value!!,
-                        myViewModel.typeMarker.value!!,
-                        myViewModel.photoMarker.value
-                    ))
-                    /*
-                    myViewModel.addMarker(
-                        Marca(
-                            myViewModel.userId.value!!,
-                            null,
-                            myViewModel.posMarker.value!!.latitude,
-                            myViewModel.posMarker.value!!.longitude,
-                            myViewModel.nameMaker.value!!,
-                            myViewModel.typeMarker.value!!,
-                            myViewModel.photoMarker.value
+                    if (uri != null) {
+                        myViewModel.uploadImage(
+                            uri!!, Marca(
+                                myViewModel.userId.value!!,
+                                null,
+                                myViewModel.posMarker.value!!.latitude,
+                                myViewModel.posMarker.value!!.longitude,
+                                myViewModel.nameMaker.value!!,
+                                myViewModel.typeMarker.value!!,
+                                myViewModel.photoMarker.value
+                            )
                         )
-                    )
-
-                     */
+                    }
+                    else {
+                        myViewModel.addMarker(
+                            Marca(
+                                myViewModel.userId.value!!,
+                                null,
+                                myViewModel.posMarker.value!!.latitude,
+                                myViewModel.posMarker.value!!.longitude,
+                                myViewModel.nameMaker.value!!,
+                                myViewModel.typeMarker.value!!,
+                                null
+                            )
+                        )
+                    }
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             myViewModel.changeBottomSheetState()

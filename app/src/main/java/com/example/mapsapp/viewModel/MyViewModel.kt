@@ -252,7 +252,6 @@ class MyViewModel: ViewModel() {
             .addOnSuccessListener {
                 Log.i("IMAGE UPLOAD", "Image uploaded successfully")
                 storage.downloadUrl.addOnSuccessListener {
-                    if (uri != null) {
                         addMarker(Marca(
                             userId.value!!,
                             "",
@@ -262,7 +261,6 @@ class MyViewModel: ViewModel() {
                             typeMarker.value!!,
                             it.toString()
                         ))
-                    }
                     _nameMarker.value = ""
                     _typeMarker.value = "avion"
                     Log.i("IMAGEN", it.toString())

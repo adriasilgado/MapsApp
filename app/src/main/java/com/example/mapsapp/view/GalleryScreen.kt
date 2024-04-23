@@ -85,16 +85,6 @@ fun GalleryScreen(navigationController: NavController, myViewModel: MyViewModel)
             modifier = Modifier.fillMaxSize()
         ) {
             Button(onClick = {
-
-            },
-                modifier = Modifier
-                    .fillMaxHeight(0.05f)
-                    .width(150.dp),
-                shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(Color.DarkGray)) {
-                Text("Upload Storage", fontFamily = sky)
-            }
-            Button(onClick = {
                 launchImage.launch("image/*")
             },
                 modifier = Modifier
