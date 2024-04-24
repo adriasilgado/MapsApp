@@ -1,5 +1,6 @@
 package com.example.mapsapp.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.os.Build
@@ -86,6 +87,7 @@ fun LocationsScreen(navigationController: NavController, myViewModel: MyViewMode
     MyDrawer(myViewModel, navigationController)
 }
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
     myViewModel.changeNameMarker("")
@@ -95,7 +97,6 @@ fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
     myViewModel.changeMarkerId("")
     myViewModel.changePhotoMarker(null)
     val markers by myViewModel.markersList.observeAsState()
-    if (markers != null) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -105,7 +106,6 @@ fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
                 MarcaItem(markers!![index], onRemove = { myViewModel.deleteMarker(markers!![index].markerId!!) }, navigationController, myViewModel)
             }
         }
-    }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)

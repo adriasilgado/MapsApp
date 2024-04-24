@@ -85,6 +85,8 @@ class MyViewModel: ViewModel() {
     val locationShowPermissionDenied = _locationShowPermissionDenied
     private val _isEditing = MutableLiveData<Boolean>()
     val isEditing = _isEditing
+    private val _filter = MutableLiveData<String>()
+    val filter = _filter
 
     fun changeBottomSheetState(){
         _showBottomSheet.value = !_showBottomSheet.value!!
@@ -174,19 +176,40 @@ class MyViewModel: ViewModel() {
         _isAddImage.value = !_isAddImage.value!!
     }
 
-    fun optionChoosed(option:String) {
+    fun optionChoosed(option:String?) {
         println(_markersList.value)
         var type : String = ""
         when (option) {
-            "aviongrande" -> type = "avion"
-            "gasolineragrande" -> type = "gasolinera"
-            "hospitalgrande" -> type = "hospital"
-            "hotelgrande" -> type = "hotel"
-            "restgrande" -> type = "restaurante"
-            "supergrande" -> type = "supermercado"
+            "aviongrande" -> {
+                type = "avion"
+                _filter.value = "aviongrande"
+            }
+            "gasolineragrande" -> {
+                type = "gasolinera"
+                _filter.value = "gasolineragrande"
+            }
+            "hospitalgrande" -> {
+                type = "hospital"
+                _filter.value = "hospitalgrande"
+            }
+            "hotelgrande" -> {
+                type = "hotel"
+                _filter.value = "hotelgrande"
+            }
+            "restgrande" -> {
+                type = "restaurante"
+                _filter.value = "restgrande"
+            }
+            "supergrande" -> {
+                type = "supermercado"
+                _filter.value = "supergrande"
+            }
         }
         if (type != "") filterMarkers(type)
-        else _markersList.value = _markers.value
+        else {
+            _filter.value = ""
+            _markersList.value = _markers.value
+        }
     }
 
     fun filterMarkers(type:String){
@@ -394,4 +417,16 @@ class MyViewModel: ViewModel() {
         _typeMarker.value = marker.tipo
         _photoMaker.value = marker.photo
     }
+
+    /*
+    fun deleteImage(image: String, marca: Marca) {
+        val storage = FirebaseStorage.getInstance().getReferenceFromUrl(image)
+        storage.delete()
+            .addOnSuccessListener {
+                marca.imagenes.remove(image)
+                editMarker(marca)
+            }
+            .addOnFailureListener { Log.e("Image delete", "Image delete failed") }
+    }
+     */
 }
