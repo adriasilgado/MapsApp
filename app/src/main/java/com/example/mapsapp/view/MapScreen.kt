@@ -290,7 +290,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                 Button(onClick = {
                     myViewModel.changeNameMarker("")
                     myViewModel.changePhotoMarker(null)
-                    myViewModel.changeTypeMarker("")
+                    myViewModel.changeTypeMarker("avion")
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {
                             myViewModel.changeBottomSheetState()
@@ -334,7 +334,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                         )
                         myViewModel.changeNameMarker("")
                         myViewModel.changePhotoMarker(null)
-                        myViewModel.changeTypeMarker("")
+                        myViewModel.changeTypeMarker("avion")
                     }
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                         if (!sheetState.isVisible) {

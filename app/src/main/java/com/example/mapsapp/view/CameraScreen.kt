@@ -86,6 +86,7 @@ import java.io.OutputStream
 fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) {
     val context = LocalContext.current
     val isAddImage by myViewModel.isAddImage.observeAsState()
+    val isEditing by myViewModel.isEditing.observeAsState()
     val controller = remember {
         LifecycleCameraController(context).apply {
             CameraController.IMAGE_CAPTURE
@@ -107,6 +108,9 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
             }
             uri = it
         })
+    if (isEditing == false) {
+        navigationController.navigate(Routes.LocationsScreen.route)
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -178,8 +182,10 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                                             myViewModel.uri.value!!.toString(),
                                         )
                                     )
-                                    Thread.sleep(2000)
-                                    navigationController.navigate(Routes.LocationsScreen.route)
+                                    if (isEditing == false) {
+                                        navigationController.navigate(Routes.LocationsScreen.route)
+                                    }
+
                                 }
                                 else {navigationController.navigateUp()}
                             }
@@ -212,7 +218,9 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                                         myViewModel.uri.value!!.toString(),
                                     )
                                 )
-                                navigationController.navigate(Routes.LocationsScreen.route)
+                                if (isEditing == false) {
+                                    navigationController.navigate(Routes.LocationsScreen.route)
+                                }
                             }
                             else {navigationController.navigateUp()}
 

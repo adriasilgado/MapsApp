@@ -33,7 +33,7 @@ class MyViewModel: ViewModel() {
     val photoMarker = _photoMaker
     private val _press = MutableLiveData<Boolean>(false)
     val press = _press
-    private val _typeMarker = MutableLiveData<String>("")
+    private val _typeMarker = MutableLiveData<String>("avion")
     val typeMarker = _typeMarker
     private val _cameraPermissionGranted = MutableLiveData(false)
     val cameraPermissionGranted = _cameraPermissionGranted
@@ -83,6 +83,8 @@ class MyViewModel: ViewModel() {
     val locationShouldShowPermissionRationale = _locationShouldShowPermissionRationale
     private val _locationShowPermissionDenied = MutableLiveData(false)
     val locationShowPermissionDenied = _locationShowPermissionDenied
+    private val _isEditing = MutableLiveData<Boolean>()
+    val isEditing = _isEditing
 
     fun changeBottomSheetState(){
         _showBottomSheet.value = !_showBottomSheet.value!!
@@ -197,8 +199,10 @@ class MyViewModel: ViewModel() {
     }
 
     fun editMarker(marker: Marca) {
+        _isEditing.value = true
         repository.editMarker(marker)
         getMarkers()
+        _isEditing.value = false
     }
 
     fun deleteMarker(markerId:String) {
@@ -282,7 +286,7 @@ class MyViewModel: ViewModel() {
                         setIsAddImage(false)
                     }
                     _nameMarker.value = ""
-                    _typeMarker.value = ""
+                    _typeMarker.value = "avion"
                     Log.i("IMAGEN", it.toString())
                     _uri.value = null
                 }
@@ -384,7 +388,7 @@ class MyViewModel: ViewModel() {
     }
 
     fun setMarker(marker: Marca) {
-        _loggedUser.value = marker.usuario
+        _userId.value = marker.usuario
         _posMarker.value = LatLng(marker.lat, marker.lon)
         _nameMarker.value = marker.name
         _typeMarker.value = marker.tipo
