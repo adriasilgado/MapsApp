@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -74,33 +75,37 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
     var emptyPassword by remember { mutableStateOf(true) }
     var context = LocalContext.current
     val userPrefs = UserPrefs(context)
-    var enter by remember { mutableStateOf(false) }
+    var enter by rememberSaveable { mutableStateOf(false) }
     var loading by remember { mutableStateOf(false)}
+    var guardado by rememberSaveable { mutableStateOf(true) }
 
     if (!enter) {
         println("entre al if")
         enter = true
         CoroutineScope(Dispatchers.Main).launch {
-            userPrefs.getUserData.collect { data ->
-                if (data[2] == "true") {
-                    loading = true
-                    println("datos: $data")
-                    myViewModel.login(data[0], data[1])
+            val data = userPrefs.getUserData.first()
+            if (data[2] == "true") {
+                loading = true
+                println("datos: $data")
+                myViewModel.login(data[0], data[1])
+                withContext(Dispatchers.Main) {
+                    myViewModel.setRememberMe(true)
+                }
+                delay(1000)
+                if (goToNext == true) {
                     withContext(Dispatchers.Main) {
-                        myViewModel.setRememberMe(true)
-                    }
-                    delay(1000)
-                    if (goToNext == true) {
-                        withContext(Dispatchers.Main) {
-                            navigationController.navigate(Routes.MapScreen.route)
-                        }
+                        navigationController.navigate(Routes.MapScreen.route)
                     }
                 }
-                else if (rememberMe == true) {
-                    println("aqui entro al else if")
-                    email = data[0]
-                    password = data[1]
-                }
+            }
+            else if (rememberMe == true && guardado) {
+                guardado = false
+                println("aqui entro al else if")
+                println("a ver que hay en data: $data")
+                email = data[0]
+                password = data[1]
+                println("quiero ver el valor de email: $email y password: $password")
+                userPrefs.saveUserData("", "", "")
             }
         }
     }
@@ -173,11 +178,14 @@ fun LoginScreen(navigationController: NavController, myViewModel: MyViewModel) {
                             }
                             myViewModel.login(storedUserData[0], storedUserData[1])
                             delay(1000)
-                            loading = true
                             if (goToNext == true) {
+                                loading = true
                                 withContext(Dispatchers.Main) {
                                     navigationController.navigate(Routes.MapScreen.route)
                                 }
+                            }
+                            else {
+                                userPrefs.saveUserData("", "", "")
                             }
                         }
                     }

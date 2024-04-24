@@ -370,6 +370,7 @@ class MyViewModel: ViewModel() {
             .addOnFailureListener {
                 Log.d("Error", "Ocurrió un error al iniciar sesión", it)
                 _showToast.value = true
+                _goToNext.value = false
             }
     }
 
