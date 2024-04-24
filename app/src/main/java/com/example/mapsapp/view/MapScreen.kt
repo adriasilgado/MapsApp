@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,12 +41,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -117,7 +121,14 @@ fun MyScaffold(state: DrawerState, navigationController: NavController, myViewMo
                 BottomSheet(navigationController, myViewModel)
             }
             else if (currentRoute == "locations_screen") {
-                Locations(navigationController, myViewModel)
+                Column (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black)
+                ){
+                    Locations(navigationController, myViewModel)
+                }
+
             }
         }
     }
@@ -184,10 +195,11 @@ fun MyTopAppBar(state: DrawerState, navigationController: NavController, myViewM
                     state.open()
                 }
             }) {
-                Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menu")
+                Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menu", tint = Color.White)
             }
         },
-        actions = { if (currentRoute == "locations_screen") MyDropDownMenu(myViewModel, false)}
+        actions = { if (currentRoute == "locations_screen") MyDropDownMenu(myViewModel, false)},
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black)
     )
 }
 
@@ -235,6 +247,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
             myViewModel.changeisCurrentLocation()
         }
         ModalBottomSheet(
+            containerColor = Color.Black,
             onDismissRequest = {
                 myViewModel.changeBottomSheetState()
             },
@@ -251,7 +264,9 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                     myViewModel.changeNameMarker(it)},
                 label = { Text("Enter marker name", fontFamily = sky) },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Green,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedBorderColor = Color.White,
                     unfocusedBorderColor = Color.Black
                 ))
             Spacer(modifier = Modifier.height(20.dp))
@@ -277,7 +292,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                     }},
                     modifier = Modifier.align(Alignment.CenterHorizontally)) {
                     Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Go to Camera",
-                        modifier = Modifier.fillMaxSize())
+                        modifier = Modifier.fillMaxSize(), tint = Color.White)
                 }
                 if (showPermissionDenied) {
                     PermissionDeclinedScreen()
@@ -302,7 +317,7 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                         .width(150.dp),
                     shape = RoundedCornerShape(25.dp),
                     colors = ButtonDefaults.buttonColors(Color.DarkGray)) {
-                    Text("Cancel", fontFamily = sky)
+                    Text("Cancel", fontFamily = sky, color = Color.White)
                 }
                 Spacer(modifier = Modifier.width(25.dp))
                 Button(onClick = {
@@ -347,9 +362,9 @@ fun BottomSheet(navigationController: NavController, myViewModel: MyViewModel) {
                         .fillMaxHeight(0.1f)
                         .width(150.dp),
                     shape = RoundedCornerShape(25.dp),
-                    colors = ButtonDefaults.buttonColors(Color.Black))
+                    colors = ButtonDefaults.buttonColors(Color.DarkGray))
                     {
-                    Text("Add marker", fontFamily = sky)
+                    Text("Add marker", fontFamily = sky, color = Color.White)
                 }
             }
 
@@ -373,7 +388,7 @@ fun EleccionTipo(myViewModel: MyViewModel) {
                     .border(
                         BorderStroke(
                             width = 2.dp,
-                            color = if (typeMarker == iconoSelect(i)) Color.Green else Color.Transparent
+                            color = if (typeMarker == iconoSelect(i)) Color.White else Color.Transparent
                         ),
                         shape = CircleShape
                     ), onClick = { myViewModel.changeTypeMarker(iconoSelect(i))}) {

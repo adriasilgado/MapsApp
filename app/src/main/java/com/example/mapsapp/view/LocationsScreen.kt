@@ -84,7 +84,13 @@ import kotlinx.coroutines.delay
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun LocationsScreen(navigationController: NavController, myViewModel: MyViewModel) {
-    MyDrawer(myViewModel, navigationController)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+        MyDrawer(myViewModel, navigationController)
+    }
 }
 
 @SuppressLint("SuspiciousIndentation")
@@ -112,9 +118,12 @@ fun Locations(navigationController: NavController, myViewModel: MyViewModel) {
 @Composable
 fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewModel: MyViewModel) {
     Card(
-        border = BorderStroke(2.dp, Color.LightGray),
+        border = BorderStroke(2.dp, Color.DarkGray),
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.DarkGray
+        )
     ) {
         Row(modifier = Modifier
             .padding(16.dp)
@@ -157,7 +166,8 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxSize(),
-                    fontFamily = sky
+                    fontFamily = sky,
+                    color = Color.White
                 )
                 Divider(
                     modifier = Modifier

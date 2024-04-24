@@ -128,7 +128,7 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
             onClick = { navigationController.navigateUp() },
             modifier = Modifier.align(Alignment.TopStart)
         ) {
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back")
+            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back", tint = Color.White)
         }
         Column(
             modifier = Modifier
@@ -154,7 +154,7 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                             .offset(16.dp, 16.dp)
                             .padding(end = 16.dp)
                     ) {
-                        Icon(imageVector = Icons.Default.Cameraswitch, contentDescription = "Switch camera")
+                        Icon(imageVector = Icons.Default.Cameraswitch, contentDescription = "Switch camera", tint = Color.White)
                     }
                     Button(
                         onClick = {
@@ -242,7 +242,7 @@ fun CameraScreen(navigationController: NavController, myViewModel: MyViewModel) 
                     modifier = Modifier
                         .offset(16.dp, 16.dp)
                         .padding(end = 16.dp)) {
-                    Icon(imageVector = Icons.Default.Photo, contentDescription = "Gallery")
+                    Icon(imageVector = Icons.Default.Photo, contentDescription = "Gallery", tint = Color.White)
                 }
             }
         }

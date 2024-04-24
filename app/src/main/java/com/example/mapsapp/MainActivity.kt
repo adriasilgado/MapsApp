@@ -36,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
@@ -139,31 +140,36 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
     val rememberMe by myViewModel.rememberMe.observeAsState()
     var loading by remember { mutableStateOf(false) }
     ModalNavigationDrawer(drawerState = state, gesturesEnabled = false ,drawerContent = {
-    ModalDrawerSheet {
+    ModalDrawerSheet (drawerContainerColor = Color.Black){
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { scope.launch { state.close() } }) {
-                Icon(imageVector = Icons.Filled.Close, contentDescription = "Close")
+                Icon(imageVector = Icons.Filled.Close, contentDescription = "Close", tint = Color.White)
             }
             Spacer(modifier = Modifier.weight(1f))
-            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile Icon")
+            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Profile Icon", tint = Color.White)
             Text(
                 myViewModel.loggedUser.value!!,
                 fontFamily = sky,
-                modifier = Modifier.padding(end = 16.dp)
+                modifier = Modifier.padding(end = 16.dp),
+                color = Color.White,
             )
         }
         Divider()
-        NavigationDrawerItem(label = {Text("Locations", fontFamily = sky)}, selected = false,
+        NavigationDrawerItem(label = {Text("Locations", fontFamily = sky, color = Color.White)}, selected = false,
             onClick = {
                 scope.launch {
                     state.close()
                 }
                 navigationController.navigate(Routes.LocationsScreen.route)
-            })
-        NavigationDrawerItem(label = {Text("Map", fontFamily = sky)}, selected = false,
+            },
+            colors = NavigationDrawerItemDefaults.colors(
+                selectedContainerColor = Color.Black,
+                unselectedContainerColor = Color.Black
+            ))
+        NavigationDrawerItem(label = {Text("Map", fontFamily = sky, color = Color.White)}, selected = false,
             onClick = {
                 scope.launch {
                     state.close()
@@ -171,20 +177,28 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
                 if (currentRoute != "map_screen") {
                     navigationController.navigate(Routes.MapScreen.route)
                 }
-            })
+            },
+            colors = NavigationDrawerItemDefaults.colors(
+                selectedContainerColor = Color.Black,
+                unselectedContainerColor = Color.Black
+            ))
         if (currentRoute == "map_screen") {
-            NavigationDrawerItem(label = {Text("Add Marker", fontFamily = sky)}, selected = false,
+            NavigationDrawerItem(label = {Text("Add Marker", fontFamily = sky, color = Color.White)}, selected = false,
                 onClick = {
                     scope.launch {
                         state.close()
                     }
                     myViewModel.changeisCurrentLocation()
                     myViewModel.changeBottomSheetState()
-                })
+                },
+                colors = NavigationDrawerItemDefaults.colors(
+                    selectedContainerColor = Color.Black,
+                    unselectedContainerColor = Color.Black
+                ))
         }
         if (loading) {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
-                CircularProgressIndicator(color = Color.Black, strokeWidth = 10.dp, modifier = Modifier.size(100.dp))
+                CircularProgressIndicator(color = Color.White, strokeWidth = 10.dp, modifier = Modifier.size(100.dp))
             }
         }
         Spacer(modifier = Modifier.weight(1f))
@@ -212,52 +226,6 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
             Text("Logout", fontFamily = sky, color = Color.Red, fontSize = 25.sp)
         }
     } }) {
-        /*
-        val isLocationPermissionGranted by myViewModel.locationPermissionGranted.observeAsState(false)
-        val shouldShowPermissionRationale by myViewModel.locationShouldShowPermissionRationale.observeAsState(false)
-        val showPermissionDenied by myViewModel.locationShowPermissionDenied.observeAsState(false)
-        val launcher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission(),
-            onResult = {isGranted ->
-                if (isGranted) {
-                    myViewModel.setLocationCameraPermissionGranted(true)
-                }
-                else {
-                    myViewModel.setLocationShouldShowPermissionRationale(
-                        ActivityCompat.shouldShowRequestPermissionRationale(
-                            context as Activity,
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                        )
-                    )
-
-                    if (!shouldShowPermissionRationale) {
-                        Log.i("MapScreen", "No podemos volver a pedir permisos")
-                        myViewModel.setLocationShowPermissionDenied(true)
-                    }
-                }
-            })
-        Column (horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()){
-            Column (horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()){
-                Button(onClick = {
-                    if (!isLocationPermissionGranted) {
-                        launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                    }
-                    else {
-                        navigationController.navigate(Routes.MapScreen.route)
-                    }
-                    println("DeclinedScreen: $showPermissionDenied")
-                }) {
-                    Text("Request Location Permission")
-                }
-            }
-            if (showPermissionDenied) {
-                PermissionDeclinedScreen()
-            }
-        }
-
-         */
-
-
         val permissionState = rememberPermissionState(permission = android.Manifest.permission.ACCESS_FINE_LOCATION)
         LaunchedEffect(Unit) {
             permissionState.launchPermissionRequest()

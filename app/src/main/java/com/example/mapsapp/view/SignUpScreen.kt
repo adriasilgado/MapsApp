@@ -1,6 +1,7 @@
 package com.example.mapsapp.view
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,12 +58,12 @@ fun SignUpScreen(navigationController: NavController, myViewModel: MyViewModel) 
     var emptyEmail by remember { mutableStateOf(true) }
     var emptyPassword by remember { mutableStateOf(true) }
     val context = LocalContext.current
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         IconButton(
             onClick = { navigationController.navigateUp() },
             modifier = Modifier.align(Alignment.TopStart)
         ) {
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back")
+            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Back", tint = Color.White)
         }
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -79,9 +80,11 @@ fun SignUpScreen(navigationController: NavController, myViewModel: MyViewModel) 
                     else emptyName = false
                     name = it
                 },
-                label = { Text("Enter name", fontFamily = sky) },
+                label = { Text("Enter name", fontFamily = sky, color = Color.White) },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Green,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedBorderColor = Color.White,
                     unfocusedBorderColor = Color.Black
                 )
             )
@@ -95,9 +98,11 @@ fun SignUpScreen(navigationController: NavController, myViewModel: MyViewModel) 
                     else emptyEmail = false
                     email = it
                 },
-                label = { Text("Enter email", fontFamily = sky) },
+                label = { Text("Enter email", fontFamily = sky, color = Color.White) },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Green,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedBorderColor = Color.White,
                     unfocusedBorderColor = Color.Black
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
@@ -112,14 +117,20 @@ fun SignUpScreen(navigationController: NavController, myViewModel: MyViewModel) 
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
-                label = { Text("Password", fontFamily = sky) },
+                label = { Text("Password", fontFamily = sky, color = Color.White) },
                 visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.Black
+                ),
                 trailingIcon = {
                     IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
                         Icon(
                             imageVector = if (passwordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                            contentDescription = if (passwordVisibility) "Hide password" else "Show password"
+                            contentDescription = if (passwordVisibility) "Hide password" else "Show password", tint = Color.White
                         )
                     }
                 }
@@ -134,14 +145,20 @@ fun SignUpScreen(navigationController: NavController, myViewModel: MyViewModel) 
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
-                label = { Text("Repeat password", fontFamily = sky) },
+                label = { Text("Repeat password", fontFamily = sky, color = Color.White) },
                 visualTransformation = if (secondPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.Black
+                ),
                 trailingIcon = {
                     IconButton(onClick = { secondPasswordVisibility = !secondPasswordVisibility }) {
                         Icon(
                             imageVector = if (secondPasswordVisibility) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                            contentDescription = if (secondPasswordVisibility) "Hide password" else "Show password"
+                            contentDescription = if (secondPasswordVisibility) "Hide password" else "Show password", tint = Color.White
                         )
                     }
                 }
@@ -185,10 +202,10 @@ fun SignUpScreen(navigationController: NavController, myViewModel: MyViewModel) 
                     .width(150.dp)
                     .padding(top = 20.dp),
                 shape = RoundedCornerShape(25.dp),
-                colors = ButtonDefaults.buttonColors(Color.DarkGray),
+                colors = ButtonDefaults.buttonColors(Color.LightGray),
                 enabled = !emptyEmail && !emptyPassword
             ) {
-                Text("Register!", fontFamily = sky)
+                Text("Register!", fontFamily = sky, color = Color.White)
             }
             if (showToast == true) {
                 Toast.makeText(context, "Email ya registrado", Toast.LENGTH_SHORT).show()

@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.cardElevation
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -77,14 +78,15 @@ fun DetailScreen(markerId:String, navigationController: NavController, myViewMod
     var show by remember { mutableStateOf(false) }
 
     if (myViewModel.posMarker.value != null) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
             IconButton(
                 onClick = { navigationController.navigate(Routes.LocationsScreen.route) },
                 modifier = Modifier.align(Alignment.TopStart)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                    contentDescription = "Back"
+                    contentDescription = "Back",
+                    tint = Color.White
                 )
             }
             if (!show) {
@@ -94,7 +96,8 @@ fun DetailScreen(markerId:String, navigationController: NavController, myViewMod
                 ) {
                     Icon(
                         imageVector = Icons.Default.EditLocationAlt,
-                        contentDescription = "Edit"
+                        contentDescription = "Edit",
+                        tint = Color.White
                     )
                 }
             }
@@ -106,11 +109,14 @@ fun DetailScreen(markerId:String, navigationController: NavController, myViewMod
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Card(shape = RoundedCornerShape(4.dp), elevation = cardElevation(4.dp)) {
+                    Card(shape = RoundedCornerShape(4.dp), elevation = cardElevation(4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.DarkGray
+                        )) {
                         Text(
                             text = "Marker Name: ${myViewModel.nameMaker.value}",
                             fontFamily = sky,
-                            color = Color.Black,
+                            color = Color.White,
                             modifier = Modifier.padding(8.dp)
                         )
                     }
@@ -119,7 +125,7 @@ fun DetailScreen(markerId:String, navigationController: NavController, myViewMod
                         Text(
                             text = "Marker Type: ${myViewModel.typeMarker.value}",
                             fontFamily = sky,
-                            color = Color.Black,
+                            color = Color.White,
                             modifier = Modifier.padding(8.dp)
                         )
                     }
@@ -228,7 +234,7 @@ fun EditScreen(marker: Marca, navigationController: NavController, myViewModel: 
     if (isEditing == false) {
         navigationController.navigate(Routes.LocationsScreen.route)
     }
-    Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
+    Column (modifier = Modifier.fillMaxSize().background(Color.Black), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(
             value = nameMarker,
             modifier = Modifier
@@ -238,7 +244,9 @@ fun EditScreen(marker: Marca, navigationController: NavController, myViewModel: 
                 nameMarker = it},
             label = { Text("Enter name", fontFamily = sky) },
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color.Blue,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                focusedBorderColor = Color.White,
                 unfocusedBorderColor = Color.Black
             )
         )
@@ -253,7 +261,7 @@ fun EditScreen(marker: Marca, navigationController: NavController, myViewModel: 
                 .width(150.dp),
             shape = RoundedCornerShape(25.dp),
             colors = ButtonDefaults.buttonColors(Color.DarkGray)) {
-            Text("Delete Image", fontFamily = sky)
+            Text("Delete Image", fontFamily = sky, color = Color.White)
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
@@ -272,7 +280,7 @@ fun EditScreen(marker: Marca, navigationController: NavController, myViewModel: 
                 .width(150.dp),
             shape = RoundedCornerShape(25.dp),
             colors = ButtonDefaults.buttonColors(Color.DarkGray)) {
-            Text("Edit", fontFamily = sky)
+            Text("Edit", fontFamily = sky, color = Color.White)
         }
     }
 }
