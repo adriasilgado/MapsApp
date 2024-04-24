@@ -187,7 +187,7 @@ fun MyTopAppBar(state: DrawerState, navigationController: NavController, myViewM
                 Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menu")
             }
         },
-        actions = { if (currentRoute == "locations_screen") MyDropDownMenu(myViewModel)}
+        actions = { if (currentRoute == "locations_screen") MyDropDownMenu(myViewModel, false)}
     )
 }
 

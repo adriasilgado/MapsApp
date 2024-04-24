@@ -266,7 +266,15 @@ fun MyDrawer(myViewModel: MyViewModel, navigationController: NavController) {
             MyScaffold(state, navigationController, myViewModel)
         }
         else {
-            Text("Need permission")
+            LaunchedEffect(Unit) {
+                permissionState.launchPermissionRequest()
+            }
+            if (permissionState.status.isGranted) {
+                MyScaffold(state, navigationController, myViewModel)
+            }
+            else {
+                PermissionDeclinedScreen()
+            }
         }
 
 

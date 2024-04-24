@@ -411,6 +411,10 @@ class MyViewModel: ViewModel() {
         _isAddImage.value = isAddImage
     }
 
+    fun setEditing(isEditing:Boolean) {
+        _isEditing.value = isEditing
+    }
+
     fun setMarker(marker: Marca) {
         _userId.value = marker.usuario
         _posMarker.value = LatLng(marker.lat, marker.lon)

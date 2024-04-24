@@ -176,8 +176,8 @@ fun MyRecyclerView(marca: Marca, navigationController: NavController, myViewMode
 
 
 @Composable
-fun MyDropDownMenu(myViewModel: MyViewModel): Int {
-    var selectedImage by remember { mutableStateOf(R.drawable.all) }
+fun MyDropDownMenu(myViewModel: MyViewModel, edit:Boolean): Int {
+    var selectedImage by remember { mutableStateOf(if (edit) R.drawable.aviongrande else R.drawable.all) }
     var expanded by remember { mutableStateOf(false) }
     val images by myViewModel.listaIconos.observeAsState()
 
@@ -215,28 +215,52 @@ fun MyDropDownMenu(myViewModel: MyViewModel): Int {
                 .width(150.dp)
                 .background(color = Color.Black)
         ) {
-            images!!.forEach { image ->
-                Box(
-                    modifier = Modifier
-                        .clickable {
-                            expanded = false
-                            selectedImage = image
-                        }
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = image),
-                        contentDescription = null,
-                        modifier = Modifier.size(50.dp)
-                    )
+            if (!edit) {
+                images!!.forEach { image ->
+                    Box(
+                        modifier = Modifier
+                            .clickable {
+                                expanded = false
+                                selectedImage = image
+                            }
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = image),
+                            contentDescription = null,
+                            modifier = Modifier.size(50.dp)
+                        )
+                    }
+                }
+            }
+            else {
+                for (i in 1 until images!!.size) {
+                    Box(
+                        modifier = Modifier
+                            .clickable {
+                                expanded = false
+                                selectedImage = images!![i]
+                            }
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = images!![i]),
+                            contentDescription = null,
+                            modifier = Modifier.size(50.dp)
+                        )
+                    }
                 }
             }
         }
     }
-    val context = LocalContext.current
-    val resourceName = getResourceNameFromContext(context, selectedImage)
-    myViewModel.optionChoosed(resourceName!!)
+    if (!edit) {
+        val context = LocalContext.current
+        val resourceName = getResourceNameFromContext(context, selectedImage)
+        myViewModel.optionChoosed(resourceName!!)
+    }
+    println(selectedImage)
     return selectedImage
 }
 

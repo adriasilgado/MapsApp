@@ -8,9 +8,9 @@ data class Marca (
     var markerId:String? = null,
     val lat:Double,
     val lon:Double,
-    val name:String,
-    val tipo:String,
-    val photo: String?
+    var name:String,
+    var tipo:String,
+    var photo: String?
 ) {
     constructor():this("", "", 0.0, 0.0, "", "", "")
 }
